@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin – Protein Snadder UB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --black:#080909; --white:#f2ede4; --lime:#c5f135;
+      --lime-dim:rgba(197,241,53,0.12); --card:#111310;
+      --card2:#161b12; --border:rgba(255,255,255,0.07);
+      --red:rgba(255,80,80,0.85); --yellow:#ffb800;
+    }
+    body { font-family:'DM Sans',sans-serif; background:var(--black); color:var(--white); min-height:100vh; }
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-thumb { background:var(--lime); border-radius:3px; }
+
+    /* ── LOGIN ── */
+    .login-screen { position:fixed; inset:0; background:var(--black); z-index:999; display:flex; align-items:center; justify-content:center; padding:2rem; }
+    .login-box { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2.5rem 2rem; width:min(380px,100%); text-align:center; }
+    .login-box h1 { font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:2px; color:var(--lime); margin-bottom:.3rem; }
+    .login-box p { opacity:.45; font-size:.85rem; margin-bottom:2rem; }
+    .login-input { width:100%; background:#0e110d; border:1px solid var(--border); border-radius:7px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.9rem; padding:.85rem 1rem; outline:none; margin-bottom:1rem; transition:border-color .2s,box-shadow .2s; }
+    .login-input:focus { border-color:rgba(197,241,53,.35); box-shadow:0 0 0 3px rgba(197,241,53,.07); }
+    .login-btn { width:100%; background:var(--lime); color:var(--black); font-family:'DM Sans',sans-serif; font-weight:800; font-size:.9rem; letter-spacing:1px; padding:.9rem; border-radius:7px; border:none; cursor:pointer; transition:box-shadow .2s,transform .15s; }
+    .login-btn:hover { box-shadow:0 6px 24px rgba(197,241,53,.28); transform:translateY(-1px); }
+    .login-error { color:#ff6b6b; font-size:.82rem; margin-top:.8rem; display:none; }
+
+    /* ── ADMIN LAYOUT ── */
+    .admin-wrap { display:none; min-height:100vh; }
+    .admin-sidebar {
+      position:fixed; top:0; left:0; bottom:0; width:220px;
+      background:#0c0f09; border-right:1px solid var(--border);
+      display:flex; flex-direction:column; z-index:100;
+    }
+    .sidebar-logo { padding:1.5rem 1.4rem; border-bottom:1px solid var(--border); }
+    .sidebar-logo-main { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:2px; color:var(--lime); }
+    .sidebar-logo-sub { font-size:.65rem; font-weight:700; letter-spacing:3px; text-transform:uppercase; opacity:.35; margin-top:.15rem; }
+    .sidebar-nav { flex:1; padding:1rem 0; }
+    .sidebar-item {
+      display:flex; align-items:center; gap:.8rem;
+      padding:.75rem 1.4rem; font-size:.85rem; font-weight:500;
+      opacity:.45; cursor:pointer; transition:opacity .2s,background .2s;
+      border-left:2px solid transparent; text-decoration:none; color:var(--white);
+    }
+    .sidebar-item:hover { opacity:.8; background:rgba(255,255,255,.03); }
+    .sidebar-item.active { opacity:1; color:var(--lime); border-left-color:var(--lime); background:rgba(197,241,53,.05); }
+    .sidebar-item-icon { font-size:1rem; width:20px; text-align:center; }
+    .sidebar-footer { padding:1.2rem 1.4rem; border-top:1px solid var(--border); }
+    .logout-btn { width:100%; background:none; border:1px solid var(--border); color:var(--white); font-family:'DM Sans',sans-serif; font-size:.8rem; font-weight:500; padding:.55rem 1rem; border-radius:6px; cursor:pointer; transition:border-color .2s,color .2s; }
+    .logout-btn:hover { border-color:rgba(255,80,80,.4); color:#ff6b6b; }
+
+    .admin-main { margin-left:220px; padding:2.5rem 2.5rem 6rem; min-height:100vh; }
+    .admin-page { display:none; }
+    .admin-page.active { display:block; }
+
+    /* ── PAGE HEADER ── */
+    .page-header { margin-bottom:2.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+    .page-header h1 { font-family:'Bebas Neue',sans-serif; font-size:2.5rem; letter-spacing:2px; }
+    .page-header p { opacity:.45; font-size:.85rem; margin-top:.3rem; }
+
+    /* ── SHARED INPUTS ── */
+    .field { display:flex; flex-direction:column; gap:.35rem; }
+    .field label { font-size:.65rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; opacity:.4; }
+    .field input, .field textarea, .field select {
+      background:#0e110d; border:1px solid var(--border); border-radius:7px;
+      color:var(--white); font-family:'DM Sans',sans-serif; font-size:.88rem;
+      padding:.75rem 1rem; outline:none; width:100%;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color:rgba(197,241,53,.35); box-shadow:0 0 0 3px rgba(197,241,53,.07); }
+    .field textarea { resize:vertical; min-height:80px; }
+    .field select option { background:#111; }
+    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .field-row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+
+    /* ── BUTTONS ── */
+    .btn-lime { background:var(--lime); color:var(--black); font-family:'DM Sans',sans-serif; font-weight:800; font-size:.82rem; letter-spacing:.5px; padding:.6rem 1.4rem; border-radius:6px; border:none; cursor:pointer; transition:box-shadow .2s,transform .15s; white-space:nowrap; }
+    .btn-lime:hover { box-shadow:0 4px 16px rgba(197,241,53,.3); transform:translateY(-1px); }
+    .btn-ghost { background:none; border:1px solid var(--border); color:var(--white); font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:500; padding:.6rem 1.1rem; border-radius:6px; cursor:pointer; transition:border-color .2s; white-space:nowrap; }
+    .btn-ghost:hover { border-color:rgba(255,255,255,.3); }
+    .btn-danger { background:none; border:1px solid rgba(255,80,80,.25); color:#ff6b6b; font-family:'DM Sans',sans-serif; font-size:.8rem; padding:.5rem .9rem; border-radius:6px; cursor:pointer; transition:background .2s; white-space:nowrap; }
+    .btn-danger:hover { background:rgba(255,80,80,.1); }
+
+    /* ── SAVE BAR ── */
+    .save-bar { position:fixed; bottom:0; left:220px; right:0; z-index:200; background:#0e120b; border-top:1px solid rgba(197,241,53,.2); padding:1rem 2.5rem; display:flex; align-items:center; justify-content:space-between; transform:translateY(100%); transition:transform .3s; }
+    .save-bar.visible { transform:translateY(0); }
+    .save-bar p { font-size:.85rem; opacity:.55; }
+    .saved-msg { color:var(--lime); font-size:.82rem; font-weight:700; display:none; }
+
+    /* ── CARDS ── */
+    .admin-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.6rem; margin-bottom:1rem; transition:border-color .2s; }
+    .admin-card:hover { border-color:rgba(197,241,53,.12); }
+    .admin-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.2rem; flex-wrap:wrap; gap:.5rem; }
+    .admin-card-title { font-weight:700; font-size:.95rem; }
+    .admin-card-sub { font-size:.78rem; opacity:.4; margin-top:.15rem; }
+    .admin-card-actions { display:flex; gap:.5rem; }
+
+    /* ── PRODUCTS ── */
+    .product-edit-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem; }
+
+    /* stock controls */
+    .stock-input-wrap { display:flex; align-items:center; gap:.4rem; }
+    .stock-btn { width:28px; height:28px; border-radius:6px; background:rgba(255,255,255,.07); border:none; color:var(--white); font-size:1.1rem; cursor:pointer; transition:background .15s; display:flex; align-items:center; justify-content:center; }
+    .stock-btn:hover { background:rgba(197,241,53,.15); }
+    .stock-num { width:56px; text-align:center; background:#0e110d; border:1px solid var(--border); border-radius:6px; color:var(--white); font-family:'DM Sans',sans-serif; font-weight:700; font-size:.92rem; padding:.4rem; outline:none; }
+    .status-toggle { display:flex; border-radius:8px; overflow:hidden; border:1px solid var(--border); width:fit-content; }
+    .status-opt { padding:.42rem .8rem; font-size:.7rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; cursor:pointer; border:none; background:none; color:var(--white); opacity:.35; transition:background .15s,opacity .15s; font-family:'DM Sans',sans-serif; }
+    .status-opt.active-in  { background:rgba(197,241,53,.18); color:var(--lime); opacity:1; }
+    .status-opt.active-out { background:rgba(255,80,80,.15); color:#ff6b6b; opacity:1; }
+    .status-opt.active-low { background:rgba(255,180,0,.15); color:var(--yellow); opacity:1; }
+
+    /* ── DISCOUNT CODES ── */
+    .discount-table { display:flex; flex-direction:column; gap:.8rem; margin-top:1rem; }
+    .discount-row-item { background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:1rem 1.2rem; display:grid; grid-template-columns:auto 1fr auto auto auto; align-items:center; gap:1rem; }
+    .code-pill { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:2px; color:var(--lime); background:var(--lime-dim); border-radius:6px; padding:.2rem .8rem; white-space:nowrap; }
+    .code-meta { font-size:.82rem; opacity:.5; }
+    .pct-badge { font-size:.78rem; font-weight:800; letter-spacing:1px; padding:.25rem .65rem; border-radius:4px; background:rgba(197,241,53,.15); color:var(--lime); white-space:nowrap; }
+
+    /* add discount form */
+    .add-discount-form { background:var(--card2); border:1px solid rgba(197,241,53,.12); border-radius:10px; padding:1.2rem; margin-top:1rem; }
+    .add-discount-form h3 { font-size:.7rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--lime); opacity:.8; margin-bottom:1rem; }
+
+    /* ── ORDERS ── */
+    .orders-empty { opacity:.35; font-size:.9rem; text-align:center; padding:3rem; }
+    .order-card { background:var(--card2); border:1px solid var(--border); border-radius:12px; margin-bottom:1rem; overflow:hidden; }
+    .order-card-header { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.3rem; background:rgba(255,255,255,.02); flex-wrap:wrap; gap:.5rem; }
+    .order-id { font-family:'Bebas Neue',sans-serif; font-size:1.2rem; letter-spacing:1px; color:var(--lime); }
+    .order-time { font-size:.75rem; opacity:.4; }
+    .order-status-badge { font-size:.68rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; padding:.25rem .7rem; border-radius:4px; }
+    .order-status-badge.pending { background:rgba(255,180,0,.15); color:var(--yellow); }
+    .order-status-badge.paid    { background:rgba(197,241,53,.15); color:var(--lime); }
+    .order-status-badge.cancelled { background:rgba(255,80,80,.12); color:#ff6b6b; }
+    .order-card-body { padding:1rem 1.3rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .order-info-label { font-size:.65rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; opacity:.35; margin-bottom:.3rem; }
+    .order-info-val { font-size:.88rem; line-height:1.65; }
+    .order-items-list { font-size:.85rem; opacity:.65; line-height:1.8; }
+    .order-total-row { padding:.8rem 1.3rem; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+    .order-total-val { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--lime); }
+    .order-actions { display:flex; gap:.5rem; }
+    .mark-paid-btn { background:rgba(197,241,53,.12); border:1px solid rgba(197,241,53,.2); color:var(--lime); font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:700; padding:.4rem .9rem; border-radius:5px; cursor:pointer; transition:background .2s; }
+    .mark-paid-btn:hover { background:rgba(197,241,53,.22); }
+    .mark-cancel-btn { background:rgba(255,80,80,.08); border:1px solid rgba(255,80,80,.2); color:#ff6b6b; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:700; padding:.4rem .9rem; border-radius:5px; cursor:pointer; transition:background .2s; }
+    .mark-cancel-btn:hover { background:rgba(255,80,80,.15); }
+    .mark-delivered-btn { background:rgba(100,180,255,.08); border:1px solid rgba(100,180,255,.25); color:#64b4ff; font-family:'DM Sans',sans-serif; font-size:.75rem; font-weight:700; padding:.4rem .9rem; border-radius:5px; cursor:pointer; transition:background .2s; }
+    .mark-delivered-btn:hover { background:rgba(100,180,255,.18); }
+    .order-status-badge.delivered { background:rgba(100,180,255,.12); color:#64b4ff; }
+    .email-sending { opacity:.5; pointer-events:none; }
+
+    /* stats row */
+    .stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:2rem; }
+    .stat-box { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1.2rem 1.4rem; }
+    .stat-num { font-family:'Bebas Neue',sans-serif; font-size:2.5rem; color:var(--lime); line-height:1; }
+    .stat-label { font-size:.75rem; opacity:.45; margin-top:.3rem; }
+
+    /* CONTENT TABS */
+    .content-tabs { display:flex; gap:.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .content-tab { background:none; border:1px solid var(--border); color:var(--white); font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:600; padding:.55rem 1.1rem; border-radius:7px; cursor:pointer; transition:all .2s; opacity:.5; }
+    .content-tab:hover { opacity:.8; }
+    .content-tab.active { background:var(--lime-dim); border-color:rgba(197,241,53,.35); color:var(--lime); opacity:1; }
+    .content-tab-panel { display:none; }
+    .content-tab-panel.active { display:block; }
+
+    /* TOGGLE */
+    .toggle-wrap { cursor:pointer; }
+    .toggle-track { width:44px; height:24px; border-radius:999px; background:rgba(255,255,255,.12); position:relative; transition:background .2s; }
+    .toggle-track.on { background:var(--lime); }
+    .toggle-thumb { width:18px; height:18px; border-radius:50%; background:white; position:absolute; top:3px; left:3px; transition:transform .2s; }
+    .toggle-track.on .toggle-thumb { transform:translateX(20px); }
+
+    /* ANN ITEM */
+    .ann-item { background:#161b12; border:1px solid var(--border); border-radius:10px; padding:1rem 1.2rem; display:flex; align-items:center; gap:1rem; }
+    .ann-item-text { flex:1; font-size:.88rem; font-weight:600; }
+    .ann-item-badge { font-size:.65rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; padding:.2rem .6rem; border-radius:4px; }
+    .ann-item-badge.active { background:rgba(197,241,53,.15); color:var(--lime); }
+    .ann-item-badge.inactive { background:rgba(255,255,255,.07); opacity:.4; }
+
+    /* ── MOBILE BOTTOM NAV ── */
+    .mobile-nav {
+      display:none; position:fixed; bottom:0; left:0; right:0; z-index:300;
+      background:#0c0f09; border-top:1px solid var(--border);
+      padding:.5rem .5rem calc(.5rem + env(safe-area-inset-bottom));
+      display:none; gap:.2rem;
+    }
+    .mobile-nav-item {
+      flex:1; display:flex; flex-direction:column; align-items:center; gap:.2rem;
+      padding:.5rem .2rem; border-radius:8px; cursor:pointer;
+      font-size:.6rem; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+      opacity:.4; transition:opacity .2s,background .2s; border:none; background:none;
+      color:var(--white); font-family:'DM Sans',sans-serif; text-decoration:none;
+    }
+    .mobile-nav-item.active { opacity:1; color:var(--lime); background:rgba(197,241,53,.07); }
+    .mobile-nav-icon { font-size:1.2rem; line-height:1; }
+    .mobile-header {
+      display:none; position:sticky; top:0; z-index:100;
+      background:#0c0f09; border-bottom:1px solid var(--border);
+      padding:.9rem 1.2rem; align-items:center; justify-content:space-between;
+    }
+    .mobile-header-logo { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:2px; color:var(--lime); }
+    .mobile-logout { background:none; border:1px solid var(--border); color:var(--white); font-family:'DM Sans',sans-serif; font-size:.75rem; padding:.4rem .8rem; border-radius:5px; cursor:pointer; }
+
+    @media(max-width:900px) {
+      .admin-sidebar { display:none; }
+      .admin-main { margin-left:0; padding:1.2rem 1rem 6rem; }
+      .save-bar { left:0; }
+      .field-row, .field-row3 { grid-template-columns:1fr 1fr; }
+      .product-edit-grid { grid-template-columns:1fr; }
+      .order-card-body { grid-template-columns:1fr; }
+      .stats-row { grid-template-columns:1fr 1fr; }
+      .discount-row-item { grid-template-columns:1fr; gap:.7rem; }
+      .mobile-nav { display:flex; }
+      .mobile-header { display:flex; }
+      .page-header { flex-direction:column; align-items:flex-start; }
+      .content-tabs { gap:.35rem; }
+      .content-tab { font-size:.72rem; padding:.45rem .8rem; }
+    }
+    @media(max-width:500px) {
+      .field-row, .field-row3 { grid-template-columns:1fr; }
+      .stats-row { grid-template-columns:1fr; }
+      .admin-main { padding:1rem .8rem 6rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- EmailJS – bytt ut placeholders når du har org.nr og EmailJS-konto -->
+<!-- 1. Gå til emailjs.com og opprett konto -->
+<!-- 2. Legg til Gmail som Email Service -->
+<!-- 3. Lag en Email Template og kopier ID-ene nedenfor -->
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  // ── EMAILJS CONFIG – bytt ut disse når du er klar ──
+  const EMAILJS_PUBLIC_KEY  = 'DIN_PUBLIC_KEY';   // Account → API Keys
+  const EMAILJS_SERVICE_ID  = 'DIN_SERVICE_ID';   // Email Services → Service ID
+  const EMAILJS_TEMPLATE_ID = 'DIN_TEMPLATE_ID';  // Email Templates → Template ID
+  // emailjs.init(EMAILJS_PUBLIC_KEY); // Uncomment denne når du har ekte nøkler
+</script>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-box">
+    <h1>Admin</h1>
+    <p>Protein Snadder UB – kun for ansatte</p>
+    <input class="login-input" type="password" id="passwordInput" placeholder="Passord" onkeydown="if(event.key==='Enter')tryLogin()" />
+    <button class="login-btn" onclick="tryLogin()">Logg inn</button>
+    <div class="login-error" id="loginError">Feil passord. Prøv igjen.</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-wrap" id="adminWrap">
+
+  <!-- MOBILE HEADER -->
+  <div class="mobile-header">
+    <div class="mobile-header-logo">PS Admin</div>
+    <button class="mobile-logout" onclick="logout()">Logg ut</button>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="admin-sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-main">PS Admin</div>
+      <div class="sidebar-logo-sub">Protein Snadder UB</div>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item active" onclick="showPage(event,'orders')" href="#">
+        <span class="sidebar-item-icon">📦</span> Bestillinger
+      </a>
+      <a class="sidebar-item" onclick="showPage(event,'products')" href="#">
+        <span class="sidebar-item-icon">🏷️</span> Produkter
+      </a>
+      <a class="sidebar-item" onclick="showPage(event,'discounts')" href="#">
+        <span class="sidebar-item-icon">🎟️</span> Rabattkoder
+      </a>
+      <a class="sidebar-item" onclick="showPage(event,'announcements')" href="#">
+        <span class="sidebar-item-icon">📢</span> Kunngjøringer
+      </a>
+      <a class="sidebar-item" onclick="showPage(event,'content')" href="#">
+        <span class="sidebar-item-icon">✏️</span> Sideinnhold
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="logout()">Logg ut</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+
+    <!-- ORDERS PAGE -->
+    <div class="admin-page active" id="page-orders">
+      <div class="page-header">
+        <div>
+          <h1>Bestillinger</h1>
+          <p>Oversikt over alle innkomne bestillinger</p>
+        </div>
+        <button class="btn-ghost" onclick="clearOrders()">Tøm alle</button>
+      </div>
+      <div class="stats-row" id="orderStats"></div>
+      <div id="ordersList"></div>
+    </div>
+
+    <!-- PRODUCTS PAGE -->
+    <div class="admin-page" id="page-products">
+      <div class="page-header">
+        <div>
+          <h1>Produkter</h1>
+          <p>Rediger produkter, priser og lagerstatus</p>
+        </div>
+        <button class="btn-lime" onclick="saveAll()">Lagre endringer</button>
+      </div>
+      <div id="productsAdmin"></div>
+    </div>
+
+    <!-- DISCOUNTS PAGE -->
+    <div class="admin-page" id="page-discounts">
+      <div class="page-header">
+        <div>
+          <h1>Rabattkoder</h1>
+          <p>Legg til, endre og slett rabattkoder</p>
+        </div>
+        <button class="btn-lime" onclick="saveAll()">Lagre endringer</button>
+      </div>
+      <div class="discount-table" id="discountTable"></div>
+
+      <div class="add-discount-form" id="addDiscountForm" style="margin-top:1.5rem">
+        <h3>Legg til ny kode</h3>
+        <div class="field-row3" style="margin-bottom:1rem">
+          <div class="field">
+            <label>Kode</label>
+            <input id="newCode" type="text" placeholder="F.eks. SOMMER25" style="text-transform:uppercase" />
+          </div>
+          <div class="field">
+            <label>Rabatt (%)</label>
+            <input id="newPct" type="number" min="1" max="100" placeholder="10" />
+          </div>
+          <div class="field">
+            <label>Beskrivelse</label>
+            <input id="newDesc" type="text" placeholder="F.eks. Sommerrabatt" />
+          </div>
+        </div>
+        <button class="btn-lime" onclick="addDiscountCode()">+ Legg til kode</button>
+        <span id="addCodeMsg" style="font-size:.82rem;margin-left:1rem;"></span>
+      </div>
+    </div>
+
+    <!-- ANNOUNCEMENTS PAGE -->
+    <div class="admin-page" id="page-announcements">
+      <div class="page-header">
+        <div>
+          <h1>Kunngjøringer</h1>
+          <p>Administrer annonsebaren og popups som vises på nettsiden</p>
+        </div>
+        <button class="btn-lime" onclick="saveAll()">Lagre endringer</button>
+      </div>
+
+      <!-- ANNOUNCEMENT BAR -->
+      <div class="admin-card" style="margin-bottom:1.5rem">
+        <div class="admin-card-header">
+          <div>
+            <div class="admin-card-title">Annonsebar</div>
+            <div class="admin-card-sub">Vises som en tynn bar under navbaren på forsiden</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.8rem">
+            <span style="font-size:.78rem;opacity:.45">Av/På</span>
+            <div class="toggle-wrap" onclick="toggleAnnBar()">
+              <div class="toggle-track" id="annBarTrack">
+                <div class="toggle-thumb" id="annBarThumb"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:1rem">
+          <label>Melding</label>
+          <input id="annBarText" type="text" placeholder="F.eks. Ny rabattkode: SNADDER10 – 10% på alt!" oninput="announcements.bar.text=this.value;markChanged();previewBar()" />
+        </div>
+        <div class="field-row" style="margin-bottom:1rem">
+          <div class="field">
+            <label>Bakgrunnsfarge</label>
+            <div style="display:flex;align-items:center;gap:.7rem">
+              <input type="color" id="annBarBg" value="#c5f135" oninput="announcements.bar.bg=this.value;markChanged();previewBar()" style="width:40px;height:36px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
+              <input type="text" id="annBarBgText" value="#c5f135" oninput="announcements.bar.bg=this.value;document.getElementById('annBarBg').value=this.value;markChanged();previewBar()" style="flex:1;background:#0e110d;border:1px solid var(--border);border-radius:7px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.6rem .8rem;outline:none" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Tekstfarge</label>
+            <div style="display:flex;align-items:center;gap:.7rem">
+              <input type="color" id="annBarFg" value="#080909" oninput="announcements.bar.fg=this.value;markChanged();previewBar()" style="width:40px;height:36px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0" />
+              <input type="text" id="annBarFgText" value="#080909" oninput="announcements.bar.fg=this.value;document.getElementById('annBarFg').value=this.value;markChanged();previewBar()" style="flex:1;background:#0e110d;border:1px solid var(--border);border-radius:7px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.6rem .8rem;outline:none" />
+            </div>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:1.2rem">
+          <label>Lenke (valgfritt – f.eks. #produkter eller en URL)</label>
+          <input id="annBarLink" type="text" placeholder="F.eks. #produkter" oninput="announcements.bar.link=this.value;markChanged()" />
+        </div>
+        <div style="font-size:.7rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;opacity:.4;margin-bottom:.7rem">Forhåndsvisning</div>
+        <div id="annBarPreview" style="border-radius:8px;overflow:hidden;"></div>
+      </div>
+
+      <!-- NOTIFICATION LIST -->
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div>
+            <div class="admin-card-title">Aktive kunngjøringer</div>
+            <div class="admin-card-sub">Legg til meldinger som vises i annonsebaren</div>
+          </div>
+          <button class="btn-lime" onclick="addAnnouncement()">+ Ny kunngjøring</button>
+        </div>
+        <div id="announcementsList" style="display:flex;flex-direction:column;gap:.7rem;margin-top:.5rem"></div>
+      </div>
+    </div>
+
+    <!-- CONTENT PAGE -->
+    <div class="admin-page" id="page-content">
+      <div class="page-header">
+        <div><h1>Sideinnhold</h1><p>Rediger tekst og innhold på alle sider direkte herfra</p></div>
+        <button class="btn-lime" onclick="saveAll()">Lagre endringer</button>
+      </div>
+
+      <!-- TABS -->
+      <div class="content-tabs">
+        <button class="content-tab active" onclick="showContentTab(this,'tab-hero')">Hero</button>
+        <button class="content-tab" onclick="showContentTab(this,'tab-omos')">Om oss</button>
+        <button class="content-tab" onclick="showContentTab(this,'tab-faq')">FAQ</button>
+        <button class="content-tab" onclick="showContentTab(this,'tab-team')">Teamet</button>
+        <button class="content-tab" onclick="showContentTab(this,'tab-contact')">Kontaktinfo</button>
+        <button class="content-tab" style="border-color:rgba(255,80,80,.3);color:#ff6b6b" onclick="openSiteSwitchTab(this)">⚠ Nettside-kontroll</button>
+      </div>
+
+      <!-- HERO TAB -->
+      <div class="content-tab-panel active" id="tab-hero">
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Hero-seksjon (forside)</div></div>
+          <div class="field" style="margin-bottom:1rem">
+            <label>Linje 1 (stor tekst)</label>
+            <input id="heroLine1" type="text" placeholder="PROTEIN" oninput="siteContent.hero.line1=this.value;markChanged()" />
+          </div>
+          <div class="field" style="margin-bottom:1rem">
+            <label>Linje 2 (grønn tekst)</label>
+            <input id="heroLine2" type="text" placeholder="SNADDER" oninput="siteContent.hero.line2=this.value;markChanged()" />
+          </div>
+          <div class="field" style="margin-bottom:1rem">
+            <label>Undertittel</label>
+            <textarea id="heroSub" rows="2" placeholder="Snacks som gir deg kraft..." oninput="siteContent.hero.sub=this.value;markChanged()"></textarea>
+          </div>
+          <div class="field">
+            <label>Øyebryn-tekst (liten tekst over tittelen)</label>
+            <input id="heroEyebrow" type="text" placeholder="Ungdomsbedrift · Trondheim" oninput="siteContent.hero.eyebrow=this.value;markChanged()" />
+          </div>
+        </div>
+      </div>
+
+      <!-- OM OSS TAB -->
+      <div class="content-tab-panel" id="tab-omos">
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Om oss-seksjonen</div></div>
+          <div class="field" style="margin-bottom:1rem">
+            <label>Avsnitt 1</label>
+            <textarea id="omosP1" rows="3" oninput="siteContent.omos.p1=this.value;markChanged()"></textarea>
+          </div>
+          <div class="field" style="margin-bottom:1rem">
+            <label>Avsnitt 2</label>
+            <textarea id="omosP2" rows="3" oninput="siteContent.omos.p2=this.value;markChanged()"></textarea>
+          </div>
+          <div class="admin-card-header" style="margin-top:1rem"><div class="admin-card-title" style="font-size:.85rem">Verdier</div><button class="btn-lime" style="font-size:.75rem;padding:.4rem .9rem" onclick="addOmosValue()">+ Legg til</button></div>
+          <div id="omosValuesList" style="display:flex;flex-direction:column;gap:.6rem;margin-top:.8rem"></div>
+          <div class="admin-card-header" style="margin-top:1.5rem"><div class="admin-card-title" style="font-size:.85rem">Stats-kort</div></div>
+          <div class="field-row3" style="margin-top:.8rem">
+            <div class="field"><label>Stat 1 – Tall</label><input id="stat1num" type="text" oninput="siteContent.omos.stats[0].num=this.value;markChanged()" /></div>
+            <div class="field"><label>Stat 1 – Tekst</label><input id="stat1label" type="text" oninput="siteContent.omos.stats[0].label=this.value;markChanged()" /></div>
+            <div class="field"><label>Stat 1 – Undertekst</label><input id="stat1sub" type="text" oninput="siteContent.omos.stats[0].sub=this.value;markChanged()" /></div>
+            <div class="field"><label>Stat 2 – Tall</label><input id="stat2num" type="text" oninput="siteContent.omos.stats[1].num=this.value;markChanged()" /></div>
+            <div class="field"><label>Stat 2 – Tekst</label><input id="stat2label" type="text" oninput="siteContent.omos.stats[1].label=this.value;markChanged()" /></div>
+            <div class="field"><label>Stat 2 – Undertekst</label><input id="stat2sub" type="text" oninput="siteContent.omos.stats[1].sub=this.value;markChanged()" /></div>
+            <div class="field"><label>Stat 3 – Tall</label><input id="stat3num" type="text" oninput="siteContent.omos.stats[2].num=this.value;markChanged()" /></div>
+            <div class="field"><label>Stat 3 – Tekst</label><input id="stat3label" type="text" oninput="siteContent.omos.stats[2].label=this.value;markChanged()" /></div>
+            <div class="field"><label>Stat 3 – Undertekst</label><input id="stat3sub" type="text" oninput="siteContent.omos.stats[2].sub=this.value;markChanged()" /></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ TAB -->
+      <div class="content-tab-panel" id="tab-faq">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">FAQ-spørsmål</div>
+            <button class="btn-lime" onclick="addFaqItem()">+ Legg til spørsmål</button>
+          </div>
+          <div id="faqAdminList" style="display:flex;flex-direction:column;gap:.8rem;margin-top:.8rem"></div>
+        </div>
+      </div>
+
+      <!-- TEAM TAB -->
+      <div class="content-tab-panel" id="tab-team">
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">Teammedlemmer</div>
+            <button class="btn-lime" onclick="addTeamMember()">+ Legg til</button>
+          </div>
+          <div id="teamAdminList" style="display:flex;flex-direction:column;gap:.8rem;margin-top:.8rem"></div>
+        </div>
+      </div>
+
+      <!-- CONTACT TAB -->
+      <div class="content-tab-panel" id="tab-contact">
+        <div class="admin-card">
+          <div class="admin-card-header"><div class="admin-card-title">Kontaktinformasjon</div></div>
+          <div class="field-row" style="margin-bottom:1rem">
+            <div class="field"><label>E-post</label><input id="contactEmail" type="email" oninput="siteContent.contact.email=this.value;markChanged()" /></div>
+            <div class="field"><label>Telefon</label><input id="contactPhone" type="tel" oninput="siteContent.contact.phone=this.value;markChanged()" /></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Instagram (uten @)</label><input id="contactInsta" type="text" oninput="siteContent.contact.instagram=this.value;markChanged()" /></div>
+            <div class="field"><label>By / leveringsområde</label><input id="contactCity" type="text" oninput="siteContent.contact.city=this.value;markChanged()" /></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SITE SWITCH TAB -->
+      <div class="content-tab-panel" id="tab-siteswitch">
+
+        <!-- MASTER SWITCH -->
+        <div class="admin-card" style="border-color:rgba(255,80,80,.2)">
+          <div class="admin-card-header">
+            <div>
+              <div class="admin-card-title" style="color:#ff6b6b">⚠ Steng nettsiden</div>
+              <div class="admin-card-sub">Skrur av forsiden for alle besøkende. Kun du ser innholdet.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:.8rem">
+              <span id="siteSwitchLabel" style="font-size:.78rem;font-weight:700;color:#ff6b6b">Nettside: PÅ</span>
+              <div class="toggle-wrap" onclick="toggleSiteSwitch()">
+                <div class="toggle-track on" id="siteSwitchTrack" style="background:var(--lime)">
+                  <div class="toggle-thumb" id="siteSwitchThumb" style="transform:translateX(20px)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="siteSwitchWarning" style="display:none;background:rgba(255,80,80,.07);border:1px solid rgba(255,80,80,.2);border-radius:10px;padding:1.2rem 1.4rem;margin-top:.5rem">
+            <div style="font-weight:700;color:#ff6b6b;margin-bottom:.5rem">🔴 Nettsiden er stengt</div>
+            <div style="font-size:.85rem;opacity:.65;line-height:1.7">Alle besøkende vil se en "Vi er snart tilbake"-side i stedet for butikken. Skru på igjen for å åpne nettsiden.</div>
+          </div>
+        </div>
+
+        <!-- MAINTENANCE MESSAGE -->
+        <div class="admin-card" style="margin-top:1rem">
+          <div class="admin-card-header">
+            <div>
+              <div class="admin-card-title">Vedlikeholdsmelding</div>
+              <div class="admin-card-sub">Vises til besøkende når nettsiden er stengt</div>
+            </div>
+          </div>
+          <div class="field" style="margin-bottom:1rem">
+            <label>Overskrift</label>
+            <input id="maintTitle" type="text" placeholder="Vi er snart tilbake!" oninput="siteSwitch.maintTitle=this.value;markChanged()" />
+          </div>
+          <div class="field" style="margin-bottom:1rem">
+            <label>Melding</label>
+            <textarea id="maintMsg" rows="3" placeholder="Vi jobber med noen forbedringer og åpner igjen snart." oninput="siteSwitch.maintMsg=this.value;markChanged()"></textarea>
+          </div>
+          <div class="field">
+            <label>Estimert åpningstid (valgfritt)</label>
+            <input id="maintTime" type="text" placeholder="F.eks. fredag 14. juni kl. 12:00" oninput="siteSwitch.maintTime=this.value;markChanged()" />
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- SITE SWITCH PASSWORD MODAL -->
+<div id="siteSwitchOverlay" style="display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:1.5rem;">
+  <div style="background:#111410;border:1px solid rgba(255,80,80,.25);border-radius:16px;padding:2.5rem 2rem;width:min(380px,100%);text-align:center">
+    <div style="font-size:2rem;margin-bottom:.5rem">🔒</div>
+    <h2 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;color:#ff6b6b;margin-bottom:.4rem">Nettside-kontroll</h2>
+    <p style="opacity:.45;font-size:.82rem;margin-bottom:1.8rem;line-height:1.6">Dette området er ekstra passordbeskyttet.<br>Kun eier har tilgang.</p>
+    <input id="siteSwitchPwInput" type="password" placeholder="Skriv inn eierpassord"
+      style="width:100%;background:#0e110d;border:1px solid rgba(255,80,80,.2);border-radius:7px;color:#f2ede4;font-family:'DM Sans',sans-serif;font-size:.9rem;padding:.85rem 1rem;outline:none;margin-bottom:.8rem;transition:border-color .2s"
+      onkeydown="if(event.key==='Enter')verifySiteSwitch()" />
+    <div id="siteSwitchPwError" style="display:none;color:#ff6b6b;font-size:.78rem;margin-bottom:.8rem">Feil passord. Prøv igjen.</div>
+    <div style="display:flex;gap:.7rem">
+      <button onclick="closeSiteSwitchModal()" style="flex:1;background:none;border:1px solid rgba(255,255,255,.1);color:#f2ede4;font-family:'DM Sans',sans-serif;font-size:.85rem;padding:.8rem;border-radius:7px;cursor:pointer">Avbryt</button>
+      <button onclick="verifySiteSwitch()" style="flex:1;background:rgba(255,80,80,.15);border:1px solid rgba(255,80,80,.3);color:#ff6b6b;font-family:'DM Sans',sans-serif;font-weight:800;font-size:.85rem;padding:.8rem;border-radius:7px;cursor:pointer">Lås opp</button>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM NAV -->
+<div class="mobile-nav" id="mobileNav">
+  <button class="mobile-nav-item active" onclick="mobileNav(event,'orders')">
+    <span class="mobile-nav-icon">📦</span>Bestillinger
+  </button>
+  <button class="mobile-nav-item" onclick="mobileNav(event,'products')">
+    <span class="mobile-nav-icon">🏷️</span>Produkter
+  </button>
+  <button class="mobile-nav-item" onclick="mobileNav(event,'discounts')">
+    <span class="mobile-nav-icon">🎟️</span>Rabatter
+  </button>
+  <button class="mobile-nav-item" onclick="mobileNav(event,'announcements')">
+    <span class="mobile-nav-icon">📢</span>Annonser
+  </button>
+  <button class="mobile-nav-item" onclick="mobileNav(event,'content')">
+    <span class="mobile-nav-icon">✏️</span>Innhold
+  </button>
+</div>
+
+<!-- SAVE BAR -->
+<div class="save-bar" id="saveBar">
+  <p>Du har ulagrede endringer</p>
+  <div style="display:flex;align-items:center;gap:1rem">
+    <span class="saved-msg" id="savedMsg">✓ Lagret!</span>
+    <button class="btn-lime" onclick="saveAll()">Lagre endringer</button>
+  </div>
+</div>
+
+<script>
+  const ADMIN_PASSWORD = 'ProteinLunde%';
+
+  // ── DEFAULT DATA ──
+  const defaultProducts = [
+    { id:1, tag:'Bestselger',   name:'Proteinbar – Sjokolade',  desc:'Klassisk sjokoladeglede pakket med protein. Perfekt mellommåltid.', price:30, protein:'~20g protein', stock:20, status:'in', img:null },
+    { id:2, tag:'Ny',           name:'Proteinpudding – Vanilje', desc:'Kremet og mettende. Smaker dessert, fungerer som treningsmat.',     price:35, protein:'~15g protein', stock:15, status:'in', img:null },
+    { id:3, tag:'Populær',      name:'Proteinbar – Peanøttsmør', desc:'Saltet peanøttsmør møter protein. En combo vanskelig å si nei til.', price:30, protein:'~21g protein', stock:20, status:'in', img:null },
+    { id:4, tag:'Lett & frisk', name:'Proteinbar – Jordbær',     desc:'Frisk og fruktig smak. Lav sukker, høy protein.',                  price:30, protein:'~19g protein', stock:10, status:'in', img:null }
+  ];
+  const defaultDiscounts = [
+    { code:'SNADDER10', pct:10, desc:'10% rabatt' },
+    { code:'TRONDHEIM', pct:15, desc:'15% rabatt' },
+    { code:'PROTEIN20', pct:20, desc:'20% rabatt' }
+  ];
+
+  let products = [];
+  let discounts = [];
+  let orders = [];
+  let hasChanges = false;
+
+  // ── AUTH ──
+  function tryLogin() {
+    if (document.getElementById('passwordInput').value === ADMIN_PASSWORD) {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('adminWrap').style.display = 'block';
+      loadAll();
+    } else {
+      document.getElementById('loginError').style.display = 'block';
+      document.getElementById('passwordInput').value = '';
+    }
+  }
+  function logout() {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('adminWrap').style.display = 'none';
+    document.getElementById('passwordInput').value = '';
+    siteSwitchUnlocked = false;
+  }
+
+  // ── LOAD / SAVE ──
+  // ── SITE CONTENT DEFAULTS ──
+  const defaultContent = {
+    hero: {
+      eyebrow: 'Ungdomsbedrift · Trondheim',
+      line1: 'PROTEIN',
+      line2: 'SNADDER',
+      sub: 'Snacks som gir deg kraft – bestill enkelt på nett og vi leverer direkte til deg.'
+    },
+    omos: {
+      p1: 'Vi er en ungdomsbedrift fra Trondheim som startet med én enkel idé: det skal være enkelt å spise sunt og proteinrikt, uten å måtte dra langt eller bruke mye tid.',
+      p2: 'Vi selger nøye utvalgte proteinsnacks og leverer direkte til deg. Målet er å vokse fra ungdomsbedrift til et skikkelig AS, og vi jobber hver dag for å komme dit.',
+      values: [
+        { text: 'Kvalitet først – vi selger kun produkter vi selv ville spist.', id: 1 },
+        { text: 'Enkel bestilling – bestill hjemmefra, vi leverer til deg.', id: 2 },
+        { text: 'Bygget av ungdom – vi lærer av å gjøre det, og vi er stolte av det.', id: 3 },
+        { text: 'Tidlig inn i næringslivet – vi bygger erfaring, nettverk og forretningssans fra ung alder.', id: 4 }
+      ],
+      stats: [
+        { num: '2025', label: 'Grunnlagt i Trondheim', sub: '' },
+        { num: '3',    label: 'Dedikerte teammedlemmer', sub: '' },
+        { num: '100%', label: 'Ungdomsbedrift', sub: 'på vei mot AS' }
+      ]
+    },
+    faq: [
+      { q: 'Hvor leverer dere?',                   a: 'Vi leverer i Trondheim og nærliggende områder. Ta kontakt hvis du er usikker på om vi leverer til deg.', id: 1 },
+      { q: 'Hvor lang tid tar leveringen?',         a: 'Vi leverer normalt innen 1–3 virkedager etter at betaling er bekreftet. I travle perioder kan det ta opptil 5 virkedager.', id: 2 },
+      { q: 'Når får jeg svar på henvendelsen min?', a: 'Vi svarer på alle henvendelser innen 1–2 virkedager. Send gjerne en melding på Instagram for raskere svar.', id: 3 },
+      { q: 'Hva skjer etter jeg har bestilt?',      a: 'Etter du sender bestillingen får du et ordrenummer. Betal til Vipps #XXXXXX innen 24 timer med ordrenummeret i meldingen. Vi bekrefter og leverer innen 1–3 virkedager.', id: 4 },
+      { q: 'Kan jeg endre eller kansellere bestillingen?', a: 'Ja, ta kontakt innen 1 virkedag etter bestilling så hjelper vi deg. Etter varen er sendt kan vi dessverre ikke kansellere.', id: 5 },
+      { q: 'Har dere fraktpris?',                   a: 'Nei, frakt er gratis på alle bestillinger i oppstartsfasen.', id: 6 }
+    ],
+    team: [
+      { name: 'Martin T. L. Hesselberg', role: 'Daglig Leder',           initials: 'MTL', id: 1 },
+      { name: 'Sebastian Rønning',       role: 'Økonomiansvarlig',        initials: 'SR',  id: 2 },
+      { name: 'Konrad Lofthus',          role: 'Sosiale Medier-ansvarlig', initials: 'KL', id: 3 }
+    ],
+    contact: {
+      email:     'hei@proteinsnadder.no',
+      phone:     '+47 999 99 999',
+      instagram: 'proteinsnadder',
+      city:      'Trondheim, Norge'
+    }
+  };
+  let siteContent = JSON.parse(JSON.stringify(defaultContent));
+
+  // ── CONTENT TAB NAV ──
+  function showContentTab(btn, tabId) {
+    document.querySelectorAll('.content-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.content-tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  // ── RENDER CONTENT FIELDS ──
+  function renderContent() {
+    // Hero
+    document.getElementById('heroEyebrow').value = siteContent.hero.eyebrow;
+    document.getElementById('heroLine1').value   = siteContent.hero.line1;
+    document.getElementById('heroLine2').value   = siteContent.hero.line2;
+    document.getElementById('heroSub').value     = siteContent.hero.sub;
+
+    // Om oss
+    document.getElementById('omosP1').value = siteContent.omos.p1;
+    document.getElementById('omosP2').value = siteContent.omos.p2;
+    siteContent.omos.stats.forEach((s,i) => {
+      document.getElementById('stat'+(i+1)+'num').value   = s.num;
+      document.getElementById('stat'+(i+1)+'label').value = s.label;
+      document.getElementById('stat'+(i+1)+'sub').value   = s.sub;
+    });
+    renderOmosValues();
+
+    // FAQ
+    renderFaqAdmin();
+
+    // Team
+    renderTeamAdmin();
+
+    // Contact
+    document.getElementById('contactEmail').value = siteContent.contact.email;
+    document.getElementById('contactPhone').value = siteContent.contact.phone;
+    document.getElementById('contactInsta').value = siteContent.contact.instagram;
+    document.getElementById('contactCity').value  = siteContent.contact.city;
+  }
+
+  // ── OM OSS VALUES ──
+  function renderOmosValues() {
+    const list = document.getElementById('omosValuesList');
+    list.innerHTML = siteContent.omos.values.map(v => `
+      <div style="display:flex;gap:.6rem;align-items:center">
+        <input type="text" value="${v.text}"
+          oninput="updateOmosValue(${v.id},this.value)"
+          style="flex:1;background:#0e110d;border:1px solid var(--border);border-radius:7px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.85rem;padding:.65rem .9rem;outline:none" />
+        <button class="btn-danger" onclick="deleteOmosValue(${v.id})">Slett</button>
+      </div>`).join('');
+  }
+  function addOmosValue() { siteContent.omos.values.push({ text:'Ny verdi', id:Date.now() }); markChanged(); renderOmosValues(); }
+  function updateOmosValue(id,val) { const v=siteContent.omos.values.find(x=>x.id===id); if(v){v.text=val;markChanged();} }
+  function deleteOmosValue(id) { siteContent.omos.values=siteContent.omos.values.filter(x=>x.id!==id); markChanged(); renderOmosValues(); }
+
+  // ── FAQ ──
+  function renderFaqAdmin() {
+    const list = document.getElementById('faqAdminList');
+    if (!siteContent.faq.length) { list.innerHTML='<div style="opacity:.35;font-size:.85rem">Ingen FAQ-spørsmål enda.</div>'; return; }
+    list.innerHTML = siteContent.faq.map(f => `
+      <div class="admin-card" style="margin:0">
+        <div class="field" style="margin-bottom:.7rem">
+          <label>Spørsmål</label>
+          <input type="text" value="${f.q}" oninput="updateFaq(${f.id},'q',this.value)"
+            style="background:#0e110d;border:1px solid var(--border);border-radius:7px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.7rem .9rem;outline:none;width:100%" />
+        </div>
+        <div class="field">
+          <label>Svar</label>
+          <textarea oninput="updateFaq(${f.id},'a',this.value)" rows="2"
+            style="background:#0e110d;border:1px solid var(--border);border-radius:7px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.85rem;padding:.7rem .9rem;outline:none;width:100%;resize:vertical">${f.a}</textarea>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:.7rem">
+          <button class="btn-danger" onclick="deleteFaq(${f.id})">Slett spørsmål</button>
+        </div>
+      </div>`).join('');
+  }
+  function addFaqItem() { siteContent.faq.push({ q:'Nytt spørsmål', a:'Svar her', id:Date.now() }); markChanged(); renderFaqAdmin(); }
+  function updateFaq(id,field,val) { const f=siteContent.faq.find(x=>x.id===id); if(f){f[field]=val;markChanged();} }
+  function deleteFaq(id) { siteContent.faq=siteContent.faq.filter(x=>x.id!==id); markChanged(); renderFaqAdmin(); }
+
+  // ── TEAM ──
+  function renderTeamAdmin() {
+    const list = document.getElementById('teamAdminList');
+    list.innerHTML = siteContent.team.map(m => `
+      <div class="admin-card" style="margin:0">
+        <div class="field-row3">
+          <div class="field">
+            <label>Navn</label>
+            <input type="text" value="${m.name}" oninput="updateTeam(${m.id},'name',this.value)"
+              style="background:#0e110d;border:1px solid var(--border);border-radius:7px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.7rem .9rem;outline:none;width:100%" />
+          </div>
+          <div class="field">
+            <label>Stilling</label>
+            <input type="text" value="${m.role}" oninput="updateTeam(${m.id},'role',this.value)"
+              style="background:#0e110d;border:1px solid var(--border);border-radius:7px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.7rem .9rem;outline:none;width:100%" />
+          </div>
+          <div class="field">
+            <label>Initialer</label>
+            <input type="text" value="${m.initials}" maxlength="3" oninput="updateTeam(${m.id},'initials',this.value.toUpperCase())"
+              style="background:#0e110d;border:1px solid var(--border);border-radius:7px;color:var(--lime);font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;padding:.7rem .9rem;outline:none;width:100%;text-transform:uppercase" />
+          </div>
+        </div>
+        <div style="display:flex;justify-content:flex-end;margin-top:.7rem">
+          <button class="btn-danger" onclick="deleteTeam(${m.id})">Fjern fra teamet</button>
+        </div>
+      </div>`).join('');
+  }
+  function addTeamMember() { siteContent.team.push({ name:'Nytt navn', role:'Stilling', initials:'??', id:Date.now() }); markChanged(); renderTeamAdmin(); }
+  function updateTeam(id,field,val) { const m=siteContent.team.find(x=>x.id===id); if(m){m[field]=val;markChanged();} }
+  function deleteTeam(id) { siteContent.team=siteContent.team.filter(x=>x.id!==id); markChanged(); renderTeamAdmin(); }
+
+  const SITE_SWITCH_PASSWORD = 'ProteinHesselberg%';
+  let siteSwitchUnlocked = false;
+  let pendingSiteSwitchBtn = null;
+
+  function openSiteSwitchTab(btn) {
+    if (siteSwitchUnlocked) {
+      showContentTab(btn, 'tab-siteswitch');
+      return;
+    }
+    pendingSiteSwitchBtn = btn;
+    document.getElementById('siteSwitchPwInput').value = '';
+    document.getElementById('siteSwitchPwError').style.display = 'none';
+    const overlay = document.getElementById('siteSwitchOverlay');
+    overlay.style.display = 'flex';
+    setTimeout(() => document.getElementById('siteSwitchPwInput').focus(), 100);
+  }
+
+  function verifySiteSwitch() {
+    const val = document.getElementById('siteSwitchPwInput').value;
+    if (val === SITE_SWITCH_PASSWORD) {
+      siteSwitchUnlocked = true;
+      closeSiteSwitchModal();
+      if (pendingSiteSwitchBtn) showContentTab(pendingSiteSwitchBtn, 'tab-siteswitch');
+    } else {
+      document.getElementById('siteSwitchPwError').style.display = 'block';
+      document.getElementById('siteSwitchPwInput').value = '';
+      document.getElementById('siteSwitchPwInput').style.borderColor = 'rgba(255,80,80,.5)';
+      setTimeout(() => document.getElementById('siteSwitchPwInput').style.borderColor = '', 1500);
+    }
+  }
+
+  function closeSiteSwitchModal() {
+    document.getElementById('siteSwitchOverlay').style.display = 'none';
+  }
+
+  // ── SITE SWITCH ──
+  let siteSwitch = { enabled: true, maintTitle: 'Vi er snart tilbake!', maintMsg: 'Vi jobber med noen forbedringer og åpner igjen snart.', maintTime: '' };
+
+  function toggleSiteSwitch() {
+    siteSwitch.enabled = !siteSwitch.enabled;
+    renderSiteSwitch();
+    markChanged();
+  }
+
+  function renderSiteSwitch() {
+    const track   = document.getElementById('siteSwitchTrack');
+    const label   = document.getElementById('siteSwitchLabel');
+    const warning = document.getElementById('siteSwitchWarning');
+    if (siteSwitch.enabled) {
+      track.classList.add('on'); track.style.background = 'var(--lime)';
+      document.getElementById('siteSwitchThumb').style.transform = 'translateX(20px)';
+      label.style.color = 'var(--lime)'; label.textContent = 'Nettside: PÅ';
+      warning.style.display = 'none';
+    } else {
+      track.classList.remove('on'); track.style.background = 'rgba(255,80,80,.4)';
+      document.getElementById('siteSwitchThumb').style.transform = 'translateX(0)';
+      label.style.color = '#ff6b6b'; label.textContent = 'Nettside: AV';
+      warning.style.display = 'block';
+    }
+    document.getElementById('maintTitle').value = siteSwitch.maintTitle || '';
+    document.getElementById('maintMsg').value   = siteSwitch.maintMsg   || '';
+    document.getElementById('maintTime').value  = siteSwitch.maintTime  || '';
+  }
+
+  const defaultAnnouncements = {
+    bar: { enabled: false, text: '', bg: '#c5f135', fg: '#080909', link: '' },
+    items: []
+  };
+  let announcements = JSON.parse(JSON.stringify(defaultAnnouncements));
+
+  function loadAll() {
+    products      = JSON.parse(localStorage.getItem('ps_stock')         || 'null') || JSON.parse(JSON.stringify(defaultProducts));
+    discounts     = JSON.parse(localStorage.getItem('ps_discounts')     || 'null') || JSON.parse(JSON.stringify(defaultDiscounts));
+    orders        = JSON.parse(localStorage.getItem('ps_orders')        || '[]');
+    announcements = JSON.parse(localStorage.getItem('ps_announcements') || 'null') || JSON.parse(JSON.stringify(defaultAnnouncements));
+    siteContent   = JSON.parse(localStorage.getItem('ps_content')       || 'null') || JSON.parse(JSON.stringify(defaultContent));
+    siteSwitch    = JSON.parse(localStorage.getItem('ps_siteswitch')    || 'null') || { enabled:true, maintTitle:'Vi er snart tilbake!', maintMsg:'Vi jobber med noen forbedringer og åpner igjen snart.', maintTime:'' };
+    renderAll();
+  }
+
+  function saveAll() {
+    localStorage.setItem('ps_stock',         JSON.stringify(products));
+    localStorage.setItem('ps_discounts',     JSON.stringify(discounts));
+    localStorage.setItem('ps_orders',        JSON.stringify(orders));
+    localStorage.setItem('ps_announcements', JSON.stringify(announcements));
+    localStorage.setItem('ps_content',       JSON.stringify(siteContent));
+    localStorage.setItem('ps_siteswitch',    JSON.stringify(siteSwitch));
+    hasChanges = false;
+    document.getElementById('saveBar').classList.remove('visible');
+    const msg = document.getElementById('savedMsg');
+    msg.style.display = 'block';
+    setTimeout(() => msg.style.display = 'none', 2500);
+  }
+
+  function markChanged() {
+    hasChanges = true;
+    document.getElementById('saveBar').classList.add('visible');
+  }
+
+  function renderAll() {
+    renderProducts();
+    renderDiscounts();
+    renderOrders();
+    renderAnnouncements();
+    renderContent();
+    renderSiteSwitch();
+  }
+
+  // ── ANNOUNCEMENTS ──
+  function renderAnnouncements() {
+    // Sync bar fields
+    document.getElementById('annBarText').value    = announcements.bar.text;
+    document.getElementById('annBarBg').value      = announcements.bar.bg || '#c5f135';
+    document.getElementById('annBarBgText').value  = announcements.bar.bg || '#c5f135';
+    document.getElementById('annBarFg').value      = announcements.bar.fg || '#080909';
+    document.getElementById('annBarFgText').value  = announcements.bar.fg || '#080909';
+    document.getElementById('annBarLink').value    = announcements.bar.link || '';
+    const track = document.getElementById('annBarTrack');
+    if (announcements.bar.enabled) track.classList.add('on'); else track.classList.remove('on');
+    previewBar();
+    renderAnnItems();
+  }
+
+  function previewBar() {
+    const text = announcements.bar.text || 'Din melding vises her';
+    const bg   = announcements.bar.bg   || '#c5f135';
+    const fg   = announcements.bar.fg   || '#080909';
+    const link = announcements.bar.link;
+    const inner = link
+      ? `<a href="${link}" style="color:${fg};text-decoration:none;font-weight:700">${text} →</a>`
+      : `<span style="font-weight:700">${text}</span>`;
+    document.getElementById('annBarPreview').innerHTML = `
+      <div style="background:${bg};color:${fg};text-align:center;padding:.6rem 2rem;font-family:'DM Sans',sans-serif;font-size:.82rem;letter-spacing:.3px;display:flex;align-items:center;justify-content:center;gap:1rem;">
+        ${inner}
+        <span style="opacity:.5;font-size:1rem;cursor:pointer">✕</span>
+      </div>`;
+  }
+
+  function toggleAnnBar() {
+    announcements.bar.enabled = !announcements.bar.enabled;
+    const track = document.getElementById('annBarTrack');
+    if (announcements.bar.enabled) track.classList.add('on'); else track.classList.remove('on');
+    markChanged();
+  }
+
+  function addAnnouncement() {
+    announcements.items.push({ text: 'Ny kunngjøring', active: true, id: Date.now() });
+    markChanged();
+    renderAnnItems();
+  }
+
+  function deleteAnnItem(id) {
+    announcements.items = announcements.items.filter(x => x.id !== id);
+    markChanged();
+    renderAnnItems();
+  }
+
+  function toggleAnnItem(id) {
+    const item = announcements.items.find(x => x.id === id);
+    if (item) { item.active = !item.active; markChanged(); renderAnnItems(); }
+  }
+
+  function updateAnnItem(id, val) {
+    const item = announcements.items.find(x => x.id === id);
+    if (item) { item.text = val; markChanged(); }
+  }
+
+  function renderAnnItems() {
+    const list = document.getElementById('announcementsList');
+    if (!announcements.items.length) {
+      list.innerHTML = '<div style="opacity:.35;font-size:.85rem;padding:.8rem 0">Ingen kunngjøringer enda. Trykk "+ Ny kunngjøring" for å legge til.</div>';
+      return;
+    }
+    list.innerHTML = announcements.items.map(item => `
+      <div class="ann-item">
+        <input type="text" value="${item.text}"
+          oninput="updateAnnItem(${item.id},this.value)"
+          style="flex:1;background:#0e110d;border:1px solid var(--border);border-radius:7px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.6rem .9rem;outline:none;transition:border-color .2s"
+          placeholder="Skriv kunngjøringstekst..." />
+        <span class="ann-item-badge ${item.active?'active':'inactive'}" style="cursor:pointer" onclick="toggleAnnItem(${item.id})">${item.active?'Aktiv':'Inaktiv'}</span>
+        <button class="btn-danger" onclick="deleteAnnItem(${item.id})">Slett</button>
+      </div>`).join('');
+  }
+
+  // ── NAVIGATION ──
+  function showPage(e, name) {
+    e.preventDefault();
+    document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    e.currentTarget.classList.add('active');
+  }
+
+  function mobileNav(e, name) {
+    document.querySelectorAll('.admin-page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.mobile-nav-item').forEach(i => i.classList.remove('active'));
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    e.currentTarget.classList.add('active');
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+
+  // ── PRODUCTS ──
+  function renderProducts() {
+    document.getElementById('productsAdmin').innerHTML = products.map(p => `
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div>
+            <div class="admin-card-title">${p.name}</div>
+            <div class="admin-card-sub">ID: ${p.id} · ${p.price} kr</div>
+          </div>
+        </div>
+        <div class="field-row" style="margin-bottom:1rem">
+          <div class="field">
+            <label>Produktnavn</label>
+            <input value="${p.name}" onchange="updateProduct(${p.id},'name',this.value)" />
+          </div>
+          <div class="field">
+            <label>Pris (kr)</label>
+            <input type="number" value="${p.price}" onchange="updateProduct(${p.id},'price',+this.value)" />
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:1rem">
+          <label>Beskrivelse</label>
+          <textarea onchange="updateProduct(${p.id},'desc',this.value)" oninput="updateProduct(${p.id},'desc',this.value)">${p.desc}</textarea>
+        </div>
+        <div class="field" style="margin-bottom:1rem">
+          <label>Proteintekst (f.eks. ~20g protein)</label>
+          <input value="${p.protein}" onchange="updateProduct(${p.id},'protein',this.value)" />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Antall på lager</label>
+            <div class="stock-input-wrap">
+              <button class="stock-btn" onclick="changeStock(${p.id},-1)">−</button>
+              <input class="stock-num" type="number" min="0" value="${p.stock}"
+                onchange="updateProduct(${p.id},'stock',+this.value)"
+                oninput="updateProduct(${p.id},'stock',+this.value)" />
+              <button class="stock-btn" onclick="changeStock(${p.id},1)">+</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <div class="status-toggle">
+              <button class="status-opt ${p.status==='in'?'active-in':''}"  onclick="updateProduct(${p.id},'status','in');  renderProducts()">På lager</button>
+              <button class="status-opt ${p.status==='low'?'active-low':''}" onclick="updateProduct(${p.id},'status','low'); renderProducts()">Få igjen</button>
+              <button class="status-opt ${p.status==='out'?'active-out':''}" onclick="updateProduct(${p.id},'status','out'); renderProducts()">Tomt</button>
+            </div>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  function updateProduct(id, field, val) {
+    const p = products.find(x => x.id === id);
+    if (p) { p[field] = val; markChanged(); }
+  }
+
+  function changeStock(id, delta) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    p.stock = Math.max(0, p.stock + delta);
+    if (p.stock === 0) p.status = 'out';
+    markChanged();
+    renderProducts();
+  }
+
+  // ── DISCOUNTS ──
+  function renderDiscounts() {
+    const table = document.getElementById('discountTable');
+    if (discounts.length === 0) {
+      table.innerHTML = '<div style="opacity:.35;font-size:.9rem;padding:1.5rem 0">Ingen rabattkoder enda.</div>';
+      return;
+    }
+    table.innerHTML = discounts.map((d,i) => `
+      <div class="discount-row-item">
+        <span class="code-pill">${d.code}</span>
+        <div>
+          <div style="font-weight:600;font-size:.88rem">${d.desc}</div>
+          <div class="code-meta">Kode: ${d.code}</div>
+        </div>
+        <div>
+          <label style="font-size:.62rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.4;display:block;margin-bottom:.3rem">Rabatt %</label>
+          <input type="number" min="1" max="100" value="${d.pct}"
+            style="width:64px;background:#0e110d;border:1px solid var(--border);border-radius:6px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.88rem;padding:.4rem .5rem;outline:none;text-align:center"
+            oninput="discounts[${i}].pct=+this.value; markChanged()" />
+        </div>
+        <div>
+          <label style="font-size:.62rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.4;display:block;margin-bottom:.3rem">Beskrivelse</label>
+          <input type="text" value="${d.desc}"
+            style="background:#0e110d;border:1px solid var(--border);border-radius:6px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:.85rem;padding:.4rem .7rem;outline:none;width:160px"
+            oninput="discounts[${i}].desc=this.value; markChanged()" />
+        </div>
+        <button class="btn-danger" onclick="deleteDiscount(${i})">Slett</button>
+      </div>`).join('');
+  }
+
+  function addDiscountCode() {
+    const code = document.getElementById('newCode').value.trim().toUpperCase();
+    const pct  = parseInt(document.getElementById('newPct').value);
+    const desc = document.getElementById('newDesc').value.trim();
+    const msg  = document.getElementById('addCodeMsg');
+
+    if (!code || !pct || !desc) { msg.style.color='#ff6b6b'; msg.textContent='Fyll ut alle feltene.'; return; }
+    if (discounts.find(d => d.code === code)) { msg.style.color='#ff6b6b'; msg.textContent='Koden finnes allerede.'; return; }
+
+    discounts.push({ code, pct, desc });
+    document.getElementById('newCode').value = '';
+    document.getElementById('newPct').value  = '';
+    document.getElementById('newDesc').value = '';
+    msg.style.color = 'var(--lime)';
+    msg.textContent = `✓ "${code}" lagt til!`;
+    setTimeout(() => msg.textContent = '', 3000);
+    markChanged();
+    renderDiscounts();
+  }
+
+  function deleteDiscount(i) {
+    discounts.splice(i, 1);
+    markChanged();
+    renderDiscounts();
+  }
+
+  // ── ORDERS ──
+  function renderOrders() {
+    const pending   = orders.filter(o => o.status === 'pending').length;
+    const paid      = orders.filter(o => o.status === 'paid').length;
+    const totalRev  = orders.filter(o => o.status === 'paid').reduce((s,o) => s + o.totalt, 0);
+
+    document.getElementById('orderStats').innerHTML = `
+      <div class="stat-box"><div class="stat-num">${orders.length}</div><div class="stat-label">Totalt bestillinger</div></div>
+      <div class="stat-box"><div class="stat-num" style="color:var(--yellow)">${pending}</div><div class="stat-label">Venter på betaling</div></div>
+      <div class="stat-box"><div class="stat-num">${totalRev} kr</div><div class="stat-label">Betalt inntekt</div></div>`;
+
+    const list = document.getElementById('ordersList');
+    if (orders.length === 0) {
+      list.innerHTML = '<div class="orders-empty">Ingen bestillinger enda. De vil dukke opp her når kunder bestiller.</div>';
+      return;
+    }
+
+    list.innerHTML = [...orders].reverse().map((o,ri) => {
+      const i = orders.length - 1 - ri;
+      const statusLabel = { pending:'Venter betaling', paid:'Betalt', cancelled:'Kansellert', delivered:'Levert' }[o.status] || o.status;
+      const items = o.produkter.map(p => `${p.navn} × ${p.antall} = ${p.pris} kr`).join('<br>');
+      return `
+      <div class="order-card">
+        <div class="order-card-header">
+          <div>
+            <div class="order-id">${o.ordreId}</div>
+            <div class="order-time">${o.tidspunkt}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:.7rem">
+            <span class="order-status-badge ${o.status}">${statusLabel}</span>
+            <div class="order-actions">
+              ${o.status === 'pending' ? `<button class="mark-paid-btn" onclick="setOrderStatus(${i},'paid')">Marker betalt</button>` : ''}
+              ${o.status === 'paid' ? `<button class="mark-delivered-btn" id="deliver-btn-${i}" onclick="markDelivered(${i})">Marker levert</button>` : ''}
+              ${o.status !== 'cancelled' ? `<button class="mark-cancel-btn" onclick="setOrderStatus(${i},'cancelled')">Kanseller</button>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="order-card-body">
+          <div>
+            <div class="order-info-label">Kunde</div>
+            <div class="order-info-val">${o.navn}<br>${o.epost}<br>${o.telefon}</div>
+          </div>
+          <div>
+            <div class="order-info-label">Leveringsadresse</div>
+            <div class="order-info-val">${o.adresse}</div>
+          </div>
+          <div>
+            <div class="order-info-label">Produkter</div>
+            <div class="order-items-list">${items}</div>
+          </div>
+          ${o.rabatt ? `<div><div class="order-info-label">Rabattkode</div><div class="order-info-val" style="color:var(--lime)">${o.rabatt.code} (−${o.rabatt.pct}%)</div></div>` : ''}
+        </div>
+        <div class="order-total-row">
+          <span style="font-size:.82rem;opacity:.5">Totalt å betale</span>
+          <span class="order-total-val">${o.totalt} kr</span>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function setOrderStatus(i, status) {
+    orders[i].status = status;
+    markChanged();
+    renderOrders();
+  }
+
+  async function markDelivered(i) {
+    const order = orders[i];
+    const btn = document.getElementById('deliver-btn-' + i);
+    if (btn) { btn.textContent = 'Sender e-post...'; btn.classList.add('email-sending'); }
+
+    // ── Send leveringsbekreftelse via EmailJS ──
+    // OBS: Denne fungerer ikke før du har ekte EmailJS-nøkler og uncommentet emailjs.init() øverst
+    const emailjsReady = EMAILJS_PUBLIC_KEY !== 'DIN_PUBLIC_KEY';
+
+    if (emailjsReady) {
+      try {
+        await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          to_email:  order.epost,
+          to_name:   order.navn.split(' ')[0],
+          ordre_id:  order.ordreId,
+          produkter: order.produkter.map(p => p.navn + ' × ' + p.antall).join(', '),
+          totalt:    order.totalt + ' kr'
+        });
+        orders[i].status = 'delivered';
+        orders[i].levertTidspunkt = new Date().toLocaleString('no-NO');
+        markChanged();
+        renderOrders();
+      } catch(err) {
+        alert('Kunne ikke sende e-post: ' + err.text);
+        if (btn) { btn.textContent = 'Marker levert'; btn.classList.remove('email-sending'); }
+      }
+    } else {
+      // Placeholder – EmailJS ikke satt opp enda
+      orders[i].status = 'delivered';
+      orders[i].levertTidspunkt = new Date().toLocaleString('no-NO');
+      markChanged();
+      renderOrders();
+      alert('⚠️ Bestillingen er markert som levert, men e-post ble IKKE sendt.\nKonfigurer EmailJS-nøklene i koden for å aktivere automatisk e-post.');
+    }
+  }
+
+  function clearOrders() {
+    orders = [];
+    markChanged();
+    renderOrders();
+  }
+</script>
+</body>
+</html>
