@@ -1,0 +1,1278 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Protein Snadder UB – Snacks som gir deg kraft</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --black: #080909; --white: #f2ede4; --lime: #c5f135;
+      --lime-dim: rgba(197,241,53,0.12); --card: #111310; --border: rgba(255,255,255,0.07);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--black); color: var(--white); overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--lime); border-radius: 3px; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(8,9,9,0.92); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-family:'Bebas Neue',sans-serif; font-size:1.55rem; letter-spacing:2px; color:var(--lime); text-decoration:none; white-space:nowrap; flex-shrink:0; }
+    .nav-right { display:flex; align-items:center; gap:0.6rem; flex-shrink:0; }
+    .nav-btn {
+      background: none; border: 1px solid rgba(255,255,255,0.15);
+      color: var(--white); font-family:'DM Sans',sans-serif;
+      font-size: 0.82rem; font-weight: 500;
+      padding: 0.48rem 0.9rem; border-radius: 6px;
+      cursor: pointer; text-decoration: none; white-space: nowrap;
+      display: inline-flex; align-items: center;
+      transition: border-color .2s, color .2s;
+    }
+    .nav-btn:hover { border-color: rgba(197,241,53,0.5); color: var(--lime); }
+    .cart-btn {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      background: var(--lime-dim); border: 1px solid rgba(197,241,53,0.25);
+      color: var(--lime); font-family:'DM Sans',sans-serif;
+      font-size: 0.82rem; font-weight: 700;
+      padding: 0.48rem 0.9rem; border-radius: 6px; cursor: pointer;
+      white-space: nowrap; transition: background .2s;
+    }
+    .cart-btn:hover { background: rgba(197,241,53,0.22); }
+    .cart-count { background:var(--lime); color:var(--black); font-size:0.65rem; font-weight:900; width:17px; height:17px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+
+    /* HERO */
+    .hero { min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; text-align:center; padding:8rem 2rem 5rem; position:relative; overflow:hidden; }
+    .hero-bg { position:absolute; inset:0; z-index:0; background:radial-gradient(ellipse 65% 55% at 50% 15%,rgba(197,241,53,.11) 0%,transparent 65%),radial-gradient(ellipse 40% 35% at 85% 75%,rgba(255,95,31,.09) 0%,transparent 65%); }
+    .hero-eyebrow { position:relative; z-index:2; font-size:0.73rem; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:var(--lime); margin-bottom:1.3rem; animation:fadeUp .6s ease both; }
+    .hero h1 { position:relative; z-index:2; font-family:'Bebas Neue',sans-serif; font-size:clamp(4.5rem,15vw,11rem); line-height:.9; letter-spacing:4px; animation:fadeUp .7s .08s ease both; }
+    .hero h1 .accent { color:var(--lime); }
+    .hero-sub { position:relative; z-index:2; max-width:500px; margin:2rem auto 0; font-size:1.05rem; line-height:1.75; opacity:0.65; animation:fadeUp .7s .16s ease both; }
+    .hero-cta { position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:.75rem; margin-top:2.5rem; animation:fadeUp .7s .24s ease both; }
+    .hero-cta-row2 { display:flex; gap:.75rem; }
+    .hero-cta-row3 { display:flex; justify-content:center; }
+    .btn-tertiary { background:transparent; color:var(--white); font-weight:400; font-size:.73rem; letter-spacing:.5px; padding:.45rem 1.2rem; border-radius:5px; border:1px solid rgba(242,237,228,.08); cursor:pointer; text-decoration:none; display:inline-block; opacity:.5; transition:opacity .2s,border-color .2s,color .2s; }
+    .btn-tertiary:hover { opacity:1; border-color:rgba(197,241,53,.3); color:var(--lime); }
+    .btn-primary { background:var(--lime); color:var(--black); font-weight:800; font-size:.9rem; letter-spacing:1px; padding:.9rem 2.6rem; border-radius:5px; border:none; cursor:pointer; text-decoration:none; display:inline-block; transition:transform .15s,box-shadow .15s; }
+    .btn-primary:hover { transform:translateY(-2px); box-shadow:0 10px 32px rgba(197,241,53,.28); }
+    .btn-secondary { background:transparent; color:var(--white); font-weight:500; font-size:.78rem; letter-spacing:.5px; padding:.6rem 1.4rem; border-radius:5px; border:1px solid rgba(242,237,228,.15); cursor:pointer; text-decoration:none; display:inline-block; transition:border-color .2s,color .2s; }
+    .btn-secondary:hover { border-color:rgba(197,241,53,.4); color:var(--lime); }
+    .btn-ghost { background:transparent; color:var(--white); font-weight:500; font-size:.9rem; padding:.9rem 2.4rem; border-radius:5px; border:1px solid rgba(242,237,228,.2); cursor:pointer; text-decoration:none; display:inline-block; transition:border-color .2s,color .2s; }
+    .btn-ghost:hover { border-color:var(--lime); color:var(--lime); }
+
+    /* BADGES */
+    .badges-wrap { position:relative; overflow:hidden; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .badges-wrap::before, .badges-wrap::after { content:''; position:absolute; top:0; bottom:0; width:80px; z-index:2; pointer-events:none; }
+    .badges-wrap::before { left:0; background:linear-gradient(90deg,var(--black),transparent); }
+    .badges-wrap::after  { right:0; background:linear-gradient(-90deg,var(--black),transparent); }
+    .badges {
+      display:flex; gap:0; padding:0;
+      animation:badgeScroll 22s linear infinite;
+      width:max-content;
+    }
+    .badges:hover { animation-play-state:paused; }
+    .badge {
+      display:flex; align-items:center; gap:.6rem;
+      font-size:.8rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+      white-space:nowrap; padding:1.2rem 2rem;
+      border-right:1px solid var(--border);
+      opacity:.55; transition:opacity .2s;
+    }
+    .badge:hover { opacity:1; }
+    .badge-line { width:20px; height:1px; background:var(--lime); opacity:.6; flex-shrink:0; }
+    @keyframes badgeScroll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* SECTION */
+    .section-label { font-size:.72rem; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:var(--lime); margin-bottom:.8rem; }
+    .section-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.8rem,6vw,4.5rem); line-height:.95; letter-spacing:2px; }
+
+    /* PRODUCTS */
+    #produkter { padding:7rem 2rem; max-width:1140px; margin:0 auto; }
+    .products-header { margin-bottom:3.5rem; }
+    .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1.4rem; }
+    .product-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; transition:transform .22s,border-color .22s,box-shadow .22s; }
+    .product-card:hover { transform:translateY(-6px); border-color:rgba(197,241,53,.3); box-shadow:0 20px 60px rgba(0,0,0,.55); }
+    .product-img { width:100%; aspect-ratio:4/3; background:linear-gradient(135deg,#181d12,#1e2619); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .product-img img { width:100%; height:100%; object-fit:cover; transition:transform .4s; }
+    .product-card:hover .product-img img { transform:scale(1.05); }
+    .img-placeholder { display:flex; flex-direction:column; align-items:center; gap:.5rem; }
+    .img-placeholder svg { opacity:.15; }
+    .img-placeholder span { font-size:.65rem; letter-spacing:2px; text-transform:uppercase; opacity:.22; font-weight:600; }
+    .product-info { padding:1.4rem; }
+    .product-tag { display:inline-block; font-size:.64rem; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; color:var(--lime); background:var(--lime-dim); border-radius:3px; padding:.2rem .6rem; margin-bottom:.7rem; }
+    .product-name { font-family:'Bebas Neue',sans-serif; font-size:1.55rem; letter-spacing:1px; margin-bottom:.4rem; }
+    .product-desc { font-size:.83rem; opacity:.55; line-height:1.65; margin-bottom:1.3rem; }
+    .product-footer { display:flex; align-items:center; justify-content:space-between; gap:.5rem; }
+    .product-price { font-size:1.3rem; font-weight:800; color:var(--lime); }
+    .product-macros { font-size:.72rem; opacity:.4; font-weight:500; margin-top:.15rem; }
+    .add-to-cart { background:var(--lime); color:var(--black); border:none; border-radius:5px; font-weight:800; font-size:.8rem; letter-spacing:.5px; padding:.55rem 1rem; cursor:pointer; transition:transform .12s,box-shadow .12s; white-space:nowrap; font-family:'DM Sans',sans-serif; }
+    .add-to-cart:hover { transform:scale(1.04); box-shadow:0 4px 16px rgba(197,241,53,.3); }
+    .delivery-estimate { font-size:.68rem; opacity:.38; font-weight:500; margin-top:.5rem; letter-spacing:.3px; }
+    /* RELATED PRODUCTS */
+    .cart-related { padding:1rem 1.8rem; border-top:1px solid var(--border); }
+    .cart-related-title { font-size:.65rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; opacity:.4; margin-bottom:.8rem; }
+    .cart-related-list { display:flex; flex-direction:column; gap:.6rem; }
+    .cart-related-item { display:flex; align-items:center; gap:.8rem; background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:8px; padding:.7rem .9rem; cursor:pointer; transition:border-color .2s,background .2s; }
+    .cart-related-item:hover { border-color:rgba(197,241,53,.25); background:rgba(197,241,53,.04); }
+    .cart-related-img { width:38px; height:38px; border-radius:6px; background:#1a1f14; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; }
+    .cart-related-img img { width:100%; height:100%; object-fit:cover; }
+    .cart-related-info { flex:1; min-width:0; }
+    .cart-related-name { font-size:.8rem; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .cart-related-price { font-size:.72rem; color:var(--lime); font-weight:700; margin-top:.1rem; }
+    .cart-related-add { background:var(--lime-dim); border:1px solid rgba(197,241,53,.2); color:var(--lime); font-family:'DM Sans',sans-serif; font-size:.72rem; font-weight:800; padding:.32rem .7rem; border-radius:5px; cursor:pointer; white-space:nowrap; transition:background .15s; flex-shrink:0; }
+    .cart-related-add:hover { background:rgba(197,241,53,.2); }
+    /* MINIMUM ORDER */
+    .cart-minimum { margin:.8rem 0 0; padding:.65rem .9rem; background:rgba(255,180,0,.07); border:1px solid rgba(255,180,0,.18); border-radius:7px; font-size:.75rem; color:#ffb800; font-weight:600; text-align:center; display:none; }
+
+    /* HOW IT WORKS */
+    #hvordan { padding:7rem 2rem; background:linear-gradient(180deg,var(--black) 0%,#0c0f09 100%); }
+    .how-inner { max-width:1140px; margin:0 auto; }
+    .steps { display:grid; grid-template-columns:1fr auto 1fr auto 1fr auto 1fr; align-items:start; gap:0; margin-top:3.5rem; }
+    .step { padding:2rem 1.6rem; border:1px solid rgba(197,241,53,.1); border-radius:12px; background:rgba(197,241,53,.03); transition:background .2s,border-color .2s; }
+    .step:hover { background:rgba(197,241,53,.07); border-color:rgba(197,241,53,.22); }
+    .step-arrow { display:flex; align-items:center; justify-content:center; padding:0 .4rem; margin-top:2.5rem; color:var(--lime); opacity:.25; font-size:1.2rem; }
+    .step-num { font-family:'Bebas Neue',sans-serif; font-size:3.5rem; color:var(--lime); opacity:.18; line-height:1; margin-bottom:.8rem; }
+    .step h3 { font-size:1.05rem; font-weight:700; margin-bottom:.5rem; }
+    .step p { font-size:.83rem; opacity:.55; line-height:1.7; }
+    @media(max-width:780px) {
+      .steps { grid-template-columns:1fr 1fr; gap:1rem; }
+      .step-arrow { display:none; }
+    }
+    @media(max-width:480px) {
+      .steps { grid-template-columns:1fr; }
+    }
+
+    /* FOOTER */
+    footer { border-top:1px solid var(--border); padding:2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+    .footer-logo { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:2px; color:var(--lime); }
+    .footer-copy { font-size:.78rem; opacity:.32; }
+    .footer-links { display:flex; gap:1.5rem; }
+    .footer-links a { font-size:.78rem; opacity:.38; color:var(--white); text-decoration:none; transition:opacity .2s; }
+    .footer-links a:hover { opacity:1; }
+
+    /* CART */
+    .cart-overlay { position:fixed; inset:0; z-index:300; background:rgba(0,0,0,.7); backdrop-filter:blur(4px); opacity:0; pointer-events:none; transition:opacity .3s; }
+    .cart-overlay.open { opacity:1; pointer-events:all; }
+    .cart-drawer { position:fixed; top:0; right:0; bottom:0; z-index:301; width:min(420px,100vw); background:#111410; border-left:1px solid var(--border); display:flex; flex-direction:column; transform:translateX(100%); transition:transform .32s cubic-bezier(.4,0,.2,1); }
+    .cart-drawer.open { transform:translateX(0); }
+    .cart-header { display:flex; align-items:center; justify-content:space-between; padding:1.5rem 1.8rem; border-bottom:1px solid var(--border); }
+    .cart-header h2 { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:2px; }
+    .cart-close { background:none; border:none; color:var(--white); font-size:1.5rem; cursor:pointer; opacity:.5; transition:opacity .2s; }
+    .cart-close:hover { opacity:1; }
+    .cart-items { flex:1; overflow-y:auto; padding:1.2rem 1.8rem; display:flex; flex-direction:column; gap:1rem; }
+    .cart-empty { opacity:.4; font-size:.9rem; margin-top:2rem; text-align:center; }
+    .cart-item { display:flex; align-items:center; gap:1rem; background:var(--card); border:1px solid var(--border); border-radius:10px; padding:.9rem 1rem; }
+    .cart-item-img { width:54px; height:54px; border-radius:8px; flex-shrink:0; background:#1a1f14; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .cart-item-img img { width:100%; height:100%; object-fit:cover; }
+    .cart-item-info { flex:1; min-width:0; }
+    .cart-item-name { font-weight:700; font-size:.88rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .cart-item-price { font-size:.8rem; color:var(--lime); font-weight:700; margin-top:.2rem; }
+    .cart-item-qty { display:flex; align-items:center; gap:.5rem; }
+    .qty-btn { width:26px; height:26px; border-radius:5px; background:rgba(255,255,255,.07); border:none; color:var(--white); font-size:1rem; cursor:pointer; transition:background .15s; display:flex; align-items:center; justify-content:center; font-family:'DM Sans',sans-serif; }
+    .qty-btn:hover { background:rgba(197,241,53,.15); }
+    .qty-num { font-weight:700; font-size:.9rem; min-width:18px; text-align:center; }
+    .cart-footer { padding:1.4rem 1.8rem; border-top:1px solid var(--border); }
+    .cart-total { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.2rem; }
+    .cart-total-label { font-size:.82rem; opacity:.5; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+    .cart-total-price { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--lime); }
+    .checkout-btn { width:100%; background:var(--lime); color:var(--black); font-family:'DM Sans',sans-serif; font-weight:800; font-size:.95rem; letter-spacing:1px; padding:1rem; border-radius:7px; border:none; cursor:pointer; transition:box-shadow .2s,transform .15s; }
+    .checkout-btn:hover { box-shadow:0 8px 28px rgba(197,241,53,.3); transform:translateY(-1px); }
+
+    /* CHECKOUT */
+    /* ── CHECKOUT MODAL ── */
+    .checkout-overlay { position:fixed; inset:0; z-index:400; background:rgba(0,0,0,.85); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; padding:1rem; opacity:0; pointer-events:none; transition:opacity .3s; }
+    .checkout-overlay.open { opacity:1; pointer-events:all; }
+    .checkout-modal { background:#111410; border:1px solid var(--border); border-radius:16px; width:min(900px,100%); max-height:92vh; overflow-y:auto; transform:scale(.96); transition:transform .3s; }
+    .checkout-overlay.open .checkout-modal { transform:scale(1); }
+    .ck-steps { display:flex; align-items:center; padding:1.4rem 2rem; border-bottom:1px solid var(--border); }
+    .ck-step { display:flex; align-items:center; gap:.5rem; font-size:.82rem; font-weight:600; opacity:.35; white-space:nowrap; }
+    .ck-step.active { opacity:1; color:var(--lime); }
+    .ck-step.done { opacity:.65; }
+    .ck-step-num { width:22px; height:22px; border-radius:50%; background:rgba(255,255,255,.1); display:flex; align-items:center; justify-content:center; font-size:.72rem; font-weight:800; }
+    .ck-step.active .ck-step-num { background:var(--lime); color:var(--black); }
+    .ck-step.done .ck-step-num { background:rgba(197,241,53,.2); color:var(--lime); }
+    .ck-step-line { flex:1; height:1px; background:var(--border); margin:0 .8rem; }
+    .ck-header { display:flex; align-items:center; gap:1rem; padding:1.5rem 2rem .5rem; }
+    .ck-header h2 { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:2px; }
+    .ck-close { background:none; border:none; color:var(--white); font-size:1.3rem; cursor:pointer; opacity:.4; transition:opacity .2s; margin-left:auto; }
+    .ck-close:hover { opacity:1; }
+    .ck-body { display:grid; grid-template-columns:1fr 320px; gap:2rem; padding:1.5rem 2rem; }
+    .ck-section-label { font-size:.68rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--lime); opacity:.8; margin-bottom:.8rem; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-bottom:.8rem; }
+    .form-group { display:flex; flex-direction:column; gap:.35rem; margin-bottom:.8rem; }
+    .form-group label { font-size:.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; opacity:.42; }
+    .form-group input { background:#0e110d; border:1px solid var(--border); border-radius:7px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.9rem; padding:.78rem 1rem; outline:none; width:100%; transition:border-color .2s,box-shadow .2s; }
+    .form-group input:focus { border-color:rgba(197,241,53,.35); box-shadow:0 0 0 3px rgba(197,241,53,.07); }
+    .ck-validation-msg { display:none; color:#ff6b6b; font-size:.82rem; padding:.7rem 1rem; background:rgba(255,80,80,.08); border:1px solid rgba(255,80,80,.2); border-radius:7px; margin-top:.3rem; }
+    .ck-summary-box { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:12px; padding:1.4rem; position:sticky; top:1rem; }
+    .ck-summary-item { display:flex; justify-content:space-between; align-items:flex-start; font-size:.85rem; margin-bottom:.7rem; gap:.5rem; }
+    .ck-summary-item-name { opacity:.7; line-height:1.4; }
+    .ck-summary-item-price { font-weight:700; color:var(--lime); white-space:nowrap; }
+    .ck-summary-row { display:flex; justify-content:space-between; font-size:.85rem; margin-bottom:.5rem; padding-top:.5rem; border-top:1px solid var(--border); opacity:.6; }
+    .ck-free { color:var(--lime) !important; font-weight:700; opacity:1 !important; }
+    .ck-summary-total { display:flex; justify-content:space-between; font-weight:800; font-size:1.05rem; padding-top:.7rem; margin-top:.3rem; border-top:1px solid var(--border); }
+    .ck-summary-total span:last-child { color:var(--lime); }
+    .ck-footer { display:flex; align-items:center; justify-content:space-between; padding:1.2rem 2rem; border-top:1px solid var(--border); }
+    .ck-back-btn { background:none; border:1px solid var(--border); color:var(--white); font-family:'DM Sans',sans-serif; font-size:.85rem; font-weight:500; padding:.65rem 1.2rem; border-radius:7px; cursor:pointer; transition:border-color .2s,color .2s; }
+    .ck-back-btn:hover { border-color:rgba(197,241,53,.3); color:var(--lime); }
+    .ck-next-btn { background:var(--lime); color:var(--black); font-family:'DM Sans',sans-serif; font-weight:800; font-size:.9rem; letter-spacing:.5px; padding:.75rem 1.8rem; border-radius:7px; border:none; cursor:pointer; transition:box-shadow .2s,transform .15s; }
+    .ck-next-btn:hover { box-shadow:0 6px 24px rgba(197,241,53,.28); transform:translateY(-1px); }
+    .ck-payment-option { display:flex; align-items:center; gap:1rem; padding:1.1rem 1.2rem; border:1px solid var(--border); border-radius:10px; margin-bottom:.8rem; cursor:pointer; transition:border-color .2s,background .2s; }
+    .ck-payment-option.selected { border-color:rgba(197,241,53,.4); background:rgba(197,241,53,.04); }
+    .ck-payment-option.disabled { cursor:default; }
+    .ck-radio-outer { width:18px; height:18px; border-radius:50%; border:2px solid rgba(255,255,255,.25); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ck-payment-option.selected .ck-radio-outer { border-color:var(--lime); }
+    .ck-radio-inner { width:9px; height:9px; border-radius:50%; background:var(--lime); }
+    .ck-payment-info { flex:1; }
+    .ck-payment-name { font-weight:700; font-size:.92rem; margin-bottom:.2rem; }
+    .ck-payment-desc { font-size:.78rem; opacity:.5; line-height:1.5; }
+    .ck-payment-logo { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:1px; }
+    .ck-coming-soon { font-size:.62rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; background:rgba(255,255,255,.1); border-radius:3px; padding:.15rem .4rem; margin-left:.4rem; vertical-align:middle; }
+    .ck-cards { display:flex; gap:.4rem; align-items:center; }
+    .ck-card-logo { font-size:.75rem; font-weight:800; padding:.2rem .5rem; border:1px solid rgba(255,255,255,.15); border-radius:4px; letter-spacing:1px; }
+    .ck-vipps-info { background:rgba(197,241,53,.05); border:1px solid rgba(197,241,53,.12); border-radius:10px; padding:1.1rem 1.3rem; margin-top:.5rem; display:flex; flex-direction:column; gap:.6rem; }
+    .ck-vipps-step { display:flex; align-items:center; gap:.7rem; font-size:.85rem; }
+    .ck-vipps-num { width:22px; height:22px; border-radius:50%; background:var(--lime); color:var(--black); font-weight:800; font-size:.72rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ck-confirm-box { background:rgba(255,255,255,.03); border:1px solid var(--border); border-radius:10px; padding:1rem 1.2rem; font-size:.88rem; line-height:1.8; opacity:.8; }
+    .ck-confirm-btn { width:100%; background:var(--lime); color:var(--black); font-family:'DM Sans',sans-serif; font-weight:800; font-size:.95rem; letter-spacing:.5px; padding:1rem; border-radius:8px; border:none; cursor:pointer; margin-top:1rem; transition:box-shadow .2s,transform .15s; }
+    .ck-confirm-btn:hover { box-shadow:0 8px 28px rgba(197,241,53,.3); transform:translateY(-1px); }
+    .ck-success-wrap { padding:3rem 2rem; text-align:center; }
+    .ck-success-icon { font-size:3.5rem; margin-bottom:1rem; }
+    .ck-success-wrap h3 { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; color:var(--lime); margin-bottom:.5rem; }
+    .ck-success-wrap > p { opacity:.6; font-size:.9rem; line-height:1.7; margin-bottom:1.5rem; }
+    .ck-vipps-payment-reminder { background:rgba(197,241,53,.07); border:1px solid rgba(197,241,53,.2); border-radius:12px; padding:1.3rem 1.5rem; text-align:left; }
+    @media(max-width:700px) { .ck-body{grid-template-columns:1fr;} .ck-right{order:-1;} .ck-summary-box{position:static;} .form-row{grid-template-columns:1fr;} }
+
+    .stock-badge { font-size:.65rem; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; padding:.22rem .6rem; border-radius:4px; white-space:nowrap; }
+    .stock-badge.in  { background:rgba(197,241,53,.15); color:var(--lime); }
+    .stock-badge.low { background:rgba(255,180,0,.15); color:#ffb800; }
+    .stock-badge.out { background:rgba(255,80,80,.12); color:#ff6b6b; }
+    .out-of-stock { opacity:.6; }
+    .out-of-stock .product-img { filter:grayscale(.5); }
+    .out-btn { background:rgba(255,255,255,.07) !important; color:rgba(255,255,255,.35) !important; cursor:not-allowed !important; box-shadow:none !important; transform:none !important; }
+    /* DISCOUNT */
+    .discount-wrap { display:flex; gap:.6rem; margin-bottom:.8rem; }
+    .discount-input { flex:1; background:#0e110d; border:1px solid var(--border); border-radius:7px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.88rem; padding:.7rem 1rem; outline:none; transition:border-color .2s,box-shadow .2s; }
+    .discount-input:focus { border-color:rgba(197,241,53,.35); box-shadow:0 0 0 3px rgba(197,241,53,.07); }
+    .discount-apply { background:none; border:1px solid rgba(197,241,53,.3); color:var(--lime); font-family:'DM Sans',sans-serif; font-weight:700; font-size:.82rem; padding:.7rem 1rem; border-radius:7px; cursor:pointer; white-space:nowrap; transition:background .2s; }
+    .discount-apply:hover { background:var(--lime-dim); }
+    .discount-msg { font-size:.78rem; margin-bottom:.5rem; min-height:1.1rem; }
+    .discount-msg.ok  { color:var(--lime); }
+    .discount-msg.err { color:#ff6b6b; }
+    .discount-row { display:flex; justify-content:space-between; font-size:.85rem; margin-bottom:.5rem; color:var(--lime); font-weight:700; }
+
+    /* OM OSS */
+    #omos { padding:7rem 2rem; max-width:1140px; margin:0 auto; }
+    .omos-inner { display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; }
+    .omos-left .section-label { margin-bottom:.8rem; }
+    .omos-left .section-title { margin-bottom:1.5rem; }
+    .omos-left p { opacity:.6; line-height:1.85; font-size:.95rem; margin-bottom:1.2rem; }
+    .omos-values { display:flex; flex-direction:column; gap:.8rem; margin-top:2rem; }
+    .omos-value { display:flex; align-items:flex-start; gap:.9rem; }
+    .omos-value-dot { width:8px; height:8px; border-radius:50%; background:var(--lime); flex-shrink:0; margin-top:.45rem; }
+    .omos-value-text { font-size:.88rem; line-height:1.65; opacity:.7; }
+    .omos-value-text strong { color:var(--white); opacity:1; }
+    .omos-right { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .omos-stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.5rem 1.4rem; transition:border-color .2s; }
+    .omos-stat-card:hover { border-color:rgba(197,241,53,.2); }
+    .omos-stat-num { font-family:'Bebas Neue',sans-serif; font-size:3rem; color:var(--lime); line-height:1; margin-bottom:.3rem; }
+    .omos-stat-label { font-size:.78rem; opacity:.5; line-height:1.5; }
+    .omos-stat-card.wide { grid-column:span 2; }
+
+    /* COOKIE BANNER */
+    .cookie-banner {
+      position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%);
+      z-index:500; width:min(640px,calc(100vw - 2rem));
+      background:#181d12; border:1px solid rgba(197,241,53,.2);
+      border-radius:14px; padding:1.4rem 1.6rem;
+      display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
+      box-shadow:0 20px 60px rgba(0,0,0,.6);
+      animation:slideUp .4s ease both;
+    }
+    .cookie-banner.hidden { display:none; }
+    .cookie-text { flex:1; min-width:200px; font-size:.83rem; line-height:1.65; opacity:.7; }
+    .cookie-text a { color:var(--lime); text-decoration:none; }
+    .cookie-text a:hover { text-decoration:underline; }
+    .cookie-btns { display:flex; gap:.6rem; flex-shrink:0; }
+    .cookie-accept { background:var(--lime); color:var(--black); font-family:'DM Sans',sans-serif; font-weight:800; font-size:.82rem; padding:.6rem 1.3rem; border-radius:6px; border:none; cursor:pointer; transition:box-shadow .2s; }
+    .cookie-accept:hover { box-shadow:0 4px 16px rgba(197,241,53,.3); }
+    .cookie-decline { background:none; border:1px solid var(--border); color:var(--white); font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:500; padding:.6rem 1rem; border-radius:6px; cursor:pointer; transition:border-color .2s; }
+    .cookie-decline:hover { border-color:rgba(255,255,255,.3); }
+    @keyframes slideUp { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+    /* FAQ */
+    #faq { padding:5rem 2rem; max-width:780px; margin:0 auto; }
+    .faq-header { text-align:center; margin-bottom:3rem; }
+    .faq-list { display:flex; flex-direction:column; gap:.7rem; }
+    .faq-item { background:var(--card); border:1px solid var(--border); border-radius:12px; overflow:hidden; transition:border-color .2s; }
+    .faq-item.open { border-color:rgba(197,241,53,.25); }
+    .faq-question { display:flex; align-items:center; justify-content:space-between; padding:1.2rem 1.5rem; cursor:pointer; font-weight:600; font-size:.92rem; gap:1rem; user-select:none; }
+    .faq-question:hover { color:var(--lime); }
+    .faq-arrow { font-size:.8rem; opacity:.5; transition:transform .25s; flex-shrink:0; }
+    .faq-item.open .faq-arrow { transform:rotate(180deg); opacity:1; color:var(--lime); }
+    .faq-answer { max-height:0; overflow:hidden; transition:max-height .3s ease, padding .3s; font-size:.88rem; opacity:.6; line-height:1.75; padding:0 1.5rem; }
+    .faq-item.open .faq-answer { max-height:200px; padding:.2rem 1.5rem 1.2rem; }
+
+    /* ANNOUNCEMENT BAR */
+    .ann-bar { display:none; position:relative; z-index:199; text-align:center; padding:.55rem 3rem; font-family:'DM Sans',sans-serif; font-size:.82rem; font-weight:700; letter-spacing:.3px; animation:slideDown .4s ease both; }
+    .ann-bar a { text-decoration:none; }
+    .ann-bar a:hover { text-decoration:underline; }
+    .ann-bar-close { position:absolute; right:1rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; font-size:1rem; opacity:.5; transition:opacity .2s; line-height:1; padding:.2rem; }
+    .ann-bar-close:hover { opacity:1; }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-100%)} to{opacity:1;transform:translateY(0)} }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+
+    /* RESPONSIVE – knapper krymper men forsvinner ALDRI */
+    @media(max-width:800px) { .omos-inner { grid-template-columns:1fr; gap:3rem; } }
+    @media(max-width:500px) {
+      nav { padding:0.75rem 0.85rem; }
+      .nav-logo { font-size:0.95rem; letter-spacing:1px; }
+      .nav-right { gap:0.3rem; }
+      .nav-btn, .cart-btn { font-size:0.65rem; padding:0.38rem 0.5rem; border-radius:5px; }
+      .cart-count { width:14px; height:14px; font-size:0.55rem; }
+      footer { flex-direction:column; align-items:flex-start; }
+      .form-row { grid-template-columns:1fr; }
+      .cookie-banner { flex-direction:column; gap:1rem; }
+    }
+  </style>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <!-- Google Analytics – bytt ut G-XXXXXXXXXX med din egen Measurement ID -->
+  <!-- Slik får du ID-en: analytics.google.com → Admin → Data Streams → Web → Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">Protein Snadder UB</a>
+  <div class="nav-right">
+    <a href="blogg.html" class="nav-btn">Blogg</a>
+    <a href="kontakt.html" class="nav-btn">Ta Kontakt</a>
+    <a href="team.html" class="nav-btn">Møt Teamet</a>
+    <button class="cart-btn" onclick="openCart()">
+      Handlekurv <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ANNOUNCEMENT BAR -->
+<div class="ann-bar" id="annBar">
+  <span id="annBarContent"></span>
+  <button class="ann-bar-close" onclick="closeAnnBar()" id="annBarClose">✕</button>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <p class="hero-eyebrow">Ungdomsbedrift · Trondheim</p>
+  <h1>PROTEIN<br><span class="accent">SNADDER</span></h1>
+  <p class="hero-sub">Snacks som gir deg kraft – bestill enkelt på nett og vi leverer direkte til deg.</p>
+  <div class="hero-cta">
+    <a href="#produkter" class="btn-primary" onclick="scrollToProducts(event)">Se produkter</a>
+    <div class="hero-cta-row2">
+      <a href="#hvordan" class="btn-secondary" onclick="scrollToId(event,'hvordan')">Slik funker det</a>
+      <a href="#omos" class="btn-secondary" onclick="scrollToId(event,'omos')">Om oss</a>
+    </div>
+    <div class="hero-cta-row3">
+      <a href="#faq" class="btn-tertiary" onclick="scrollToId(event,'faq')">Vanlige spørsmål</a>
+      <a href="blogg.html" class="btn-tertiary">Blogg</a>
+    </div>
+  </div>
+</section>
+
+<!-- BADGES -->
+<div class="badges-wrap">
+  <div class="badges">
+    <div class="badge"><span class="badge-line"></span>Høy protein</div>
+    <div class="badge"><span class="badge-line"></span>Hjemlevering</div>
+    <div class="badge"><span class="badge-line"></span>Enkel nettbestilling</div>
+    <div class="badge"><span class="badge-line"></span>Norsk ungdomsbedrift</div>
+    <div class="badge"><span class="badge-line"></span>Kvalitetsprodukter</div>
+    <div class="badge"><span class="badge-line"></span>Høy protein</div>
+    <div class="badge"><span class="badge-line"></span>Hjemlevering</div>
+    <div class="badge"><span class="badge-line"></span>Enkel nettbestilling</div>
+    <div class="badge"><span class="badge-line"></span>Norsk ungdomsbedrift</div>
+    <div class="badge"><span class="badge-line"></span>Kvalitetsprodukter</div>
+  </div>
+</div>
+
+<!-- PRODUCTS -->
+<section id="produkter">
+  <div class="products-header">
+    <p class="section-label">Utvalg</p>
+    <h2 class="section-title">VÅRE PRODUKTER</h2>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="hvordan">
+  <div class="how-inner">
+    <p class="section-label">Slik funker det</p>
+    <h2 class="section-title">ENKELT SOM BARE DET</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><h3>Velg produkt</h3><p>Bla gjennom utvalget vårt og finn det som passer deg.</p></div>
+      <div class="step-arrow">→</div>
+      <div class="step"><div class="step-num">02</div><h3>Legg i handlekurv</h3><p>Legg til produktene du vil ha og juster antall etter behov.</p></div>
+      <div class="step-arrow">→</div>
+      <div class="step"><div class="step-num">03</div><h3>Bestill på nett</h3><p>Fyll inn leveringsinfo og bekreft bestillingen direkte her.</p></div>
+      <div class="step-arrow">→</div>
+      <div class="step"><div class="step-num">04</div><h3>Vi leverer til deg</h3><p>Vi tar oss av leveringen – du får beskjed når varene er på vei.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- OM OSS -->
+<section id="omos">
+  <div class="omos-inner">
+    <div class="omos-left">
+      <p class="section-label">Om oss</p>
+      <h2 class="section-title">VI ER PROTEIN<br><span style="color:var(--lime)">SNADDER UB</span></h2>
+      <p id="omosP1">Vi er en ungdomsbedrift fra Trondheim som startet med én enkel idé: det skal være enkelt å spise sunt og proteinrikt, uten å måtte dra langt eller bruke mye tid.</p>
+      <p id="omosP2">Vi selger nøye utvalgte proteinsnacks og leverer direkte til deg. Målet er å vokse fra ungdomsbedrift til et skikkelig AS, og vi jobber hver dag for å komme dit.</p>
+      <div class="omos-values">
+        <div class="omos-value"><div class="omos-value-dot"></div><div class="omos-value-text"><strong>Kvalitet først</strong> – vi selger kun produkter vi selv ville spist.</div></div>
+        <div class="omos-value"><div class="omos-value-dot"></div><div class="omos-value-text"><strong>Enkel bestilling</strong> – bestill hjemmefra, vi leverer til deg.</div></div>
+        <div class="omos-value"><div class="omos-value-dot"></div><div class="omos-value-text"><strong>Bygget av ungdom</strong> – vi lærer av å gjøre det, og vi er stolte av det.</div></div>
+        <div class="omos-value"><div class="omos-value-dot"></div><div class="omos-value-text"><strong>Tidlig inn i næringslivet</strong> – vi bygger erfaring, nettverk og forretningssans fra ung alder.</div></div>
+      </div>
+    </div>
+    <div class="omos-right">
+      <div class="omos-stat-card">
+        <div class="omos-stat-num">2025</div>
+        <div class="omos-stat-label">Grunnlagt i Trondheim</div>
+      </div>
+      <div class="omos-stat-card">
+        <div class="omos-stat-num">3</div>
+        <div class="omos-stat-label">Dedikerte teammedlemmer</div>
+      </div>
+      <div class="omos-stat-card wide">
+        <div class="omos-stat-num">100%</div>
+        <div class="omos-stat-label">Ungdomsbedrift – på vei mot AS</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="faq-header">
+    <p class="section-label">Spørsmål og svar</p>
+    <h2 class="section-title">VANLIGE<br><span style="color:var(--lime)">SPØRSMÅL</span></h2>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">Hvor leverer dere? <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer">Vi leverer i Trondheim og nærliggende områder. Ta kontakt hvis du er usikker på om vi leverer til deg.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">Hvor lang tid tar leveringen? <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer">Vi leverer normalt innen 1–3 virkedager etter at betaling er bekreftet. I travle perioder kan det ta opptil 5 virkedager.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">Når får jeg svar på henvendelsen min? <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer">Vi svarer på alle henvendelser innen 1–2 virkedager. Send gjerne en melding på Instagram for raskere svar.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">Hva skjer etter jeg har bestilt? <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer">Etter du fullfører bestillingen sendes du til Vipps for betaling. Betalingen behandles umiddelbart og du mottar en bekreftelse på e-post. Vi leverer innen 1–3 virkedager.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">Kan jeg endre eller kansellere bestillingen? <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer">Ja, ta kontakt innen 1 virkedag etter bestilling så hjelper vi deg. Etter varen er sendt kan vi dessverre ikke kansellere.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-question">Har dere fraktpris? <span class="faq-arrow">▼</span></div>
+      <div class="faq-answer">Nei, frakt er gratis på alle bestillinger i oppstartsfasen. Vi vil innføre fraktpriser basert på avstand når vi vokser.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Protein Snadder UB</div>
+  <div class="footer-links">
+    <a href="#produkter">Produkter</a>
+    <a href="blogg.html">Blogg</a>
+    <a href="#omos">Om oss</a>
+    <a href="#faq">FAQ</a>
+    <a href="personvern.html">Personvern</a>
+    <a href="team.html">Teamet</a>
+    <a href="kontakt.html">Kontakt</a>
+    <a href="blogg.html">Blogg</a>
+  </div>
+  <div class="footer-copy">© 2025 Protein Snadder UB – Ungdomsbedrift · Trondheim</div>
+</footer>
+<div style="text-align:center;padding:.8rem 2rem;border-top:1px solid rgba(255,255,255,0.04);">
+  <a href="personvern.html" style="font-size:.72rem;opacity:.28;color:var(--white);text-decoration:none;letter-spacing:1.5px;text-transform:uppercase;transition:opacity .2s;" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='.28'">Personvernerklæring</a>
+</div>
+
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookieBanner">
+  <div class="cookie-text">
+    Vi bruker informasjonskapsler for å huske dine valg på siden (f.eks. lagerstatus og cookie-preferanser). Vi bruker <strong>ingen sporings- eller reklamecookies</strong>, og deler ikke data med tredjeparter. Les mer i vår <a href="personvern.html">personvernserklæring</a>.
+  </div>
+  <div class="cookie-btns">
+    <button class="cookie-decline" onclick="declineCookies()">Avslå</button>
+    <button class="cookie-accept" onclick="acceptCookies()">Godta alle</button>
+  </div>
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h2>Handlekurv</h2>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty" id="cartEmpty">Handlekurven er tom</div>
+  </div>
+  <div class="cart-related" id="cartRelated" style="display:none">
+    <div class="cart-related-title">Andre kjøper også</div>
+    <div class="cart-related-list" id="cartRelatedList"></div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-minimum" id="cartMinimum">Minimum bestilling er 60 kr</div>
+    <div class="cart-total">
+      <span class="cart-total-label">Totalt</span>
+      <span class="cart-total-price" id="cartTotal">0 kr</span>
+    </div>
+    <button class="checkout-btn" id="checkoutBtn" onclick="openCheckout()">Gå til bestilling</button>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-modal" id="checkoutModal">
+
+    <!-- STEP INDICATOR -->
+    <div class="ck-steps" id="ckSteps">
+      <div class="ck-step active" id="step1ind"><span class="ck-step-num">1</span> Levering</div>
+      <div class="ck-step-line"></div>
+      <div class="ck-step" id="step2ind"><span class="ck-step-num">2</span> Betaling</div>
+      <div class="ck-step-line"></div>
+      <div class="ck-step" id="step3ind"><span class="ck-step-num">3</span> Bekreft</div>
+    </div>
+
+    <!-- STEP 1: DELIVERY -->
+    <div id="ckStep1">
+      <div class="ck-header">
+        <button class="ck-close" onclick="closeCheckout()">✕</button>
+        <h2>Leveringsinformasjon</h2>
+      </div>
+      <div class="ck-body">
+        <div class="ck-left">
+          <div class="ck-section-label">Kontaktinfo</div>
+          <div class="form-row">
+            <div class="form-group"><label>Fornavn</label><input id="chkFname" type="text" placeholder="Ola" oninput="saveCheckoutInfo()" /></div>
+            <div class="form-group"><label>Etternavn</label><input id="chkLname" type="text" placeholder="Nordmann" oninput="saveCheckoutInfo()" /></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>E-post</label><input id="chkEmail" type="email" placeholder="ola@epost.no" oninput="saveCheckoutInfo()" /></div>
+            <div class="form-group"><label>Telefon</label><input id="chkPhone" type="tel" placeholder="+47 000 00 000" oninput="saveCheckoutInfo()" /></div>
+          </div>
+          <div class="ck-section-label" style="margin-top:1.2rem">Leveringsadresse</div>
+          <div class="form-group"><label>Gateadresse</label><input id="chkAddr" type="text" placeholder="Eksempelgata 12" oninput="saveCheckoutInfo()" /></div>
+          <div class="form-row">
+            <div class="form-group"><label>Postnummer</label><input id="chkZip" type="text" placeholder="7010" oninput="saveCheckoutInfo()" /></div>
+            <div class="form-group"><label>Poststed</label><input id="chkCity" type="text" placeholder="Trondheim" oninput="saveCheckoutInfo()" /></div>
+          </div>
+          <div id="step1ValidationMsg" class="ck-validation-msg">Vennligst fyll ut alle feltene markert i rødt.</div>
+        </div>
+        <div class="ck-right">
+          <div class="ck-summary-box">
+            <div class="ck-section-label">Bestillingsoversikt</div>
+            <div id="ckSummaryItems1"></div>
+            <div class="ck-summary-row"><span>Frakt</span><span class="ck-free">Gratis</span></div>
+            <div class="ck-summary-total"><span>Total</span><span id="ckTotal1">0 kr</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="ck-footer">
+        <button class="ck-back-btn" onclick="closeCheckout()">← Tilbake til handlekurv</button>
+        <button class="ck-next-btn" onclick="goToStep2()">Fortsett til betaling →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: PAYMENT -->
+    <div id="ckStep2" style="display:none">
+      <div class="ck-header">
+        <button class="ck-close" onclick="closeCheckout()">✕</button>
+        <h2>Betalingsmåte</h2>
+      </div>
+      <div class="ck-body">
+        <div class="ck-left">
+          <div class="ck-section-label">Velg betalingsmåte</div>
+
+          <div class="ck-payment-option selected" id="payVipps" onclick="selectPayment('vipps')">
+            <div class="ck-radio-outer"><div class="ck-radio-inner" id="radioVipps"></div></div>
+            <div class="ck-payment-info">
+              <div class="ck-payment-name">Vipps</div>
+              <div class="ck-payment-desc">Betal enkelt og trygt med Vipps.</div>
+            </div>
+            <div class="ck-payment-logo vipps-logo">v<span style="color:#ff5b24">ipps</span></div>
+          </div>
+
+          <div class="ck-payment-option disabled" id="payKort" onclick="selectPayment('kort')">
+            <div class="ck-radio-outer"><div class="ck-radio-inner" id="radioKort" style="display:none"></div></div>
+            <div class="ck-payment-info">
+              <div class="ck-payment-name" style="opacity:.45">Kortbetaling <span class="ck-coming-soon">Kommer snart</span></div>
+              <div class="ck-payment-desc" style="opacity:.35">Ikke tilgjengelig enda.</div>
+            </div>
+            <div class="ck-cards">
+              <div class="ck-card-logo" style="opacity:.3">VISA</div>
+              <div class="ck-card-logo mc" style="opacity:.3"><span style="color:#eb001b">●</span><span style="color:#f79e1b">●</span></div>
+            </div>
+          </div>
+
+          <!-- VIPPS CHECKOUT – aktiveres med org.nr. -->
+          <div class="ck-vipps-info" id="vippsInfo">
+            <div style="font-size:.78rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--lime);opacity:.8;margin-bottom:.8rem;">Betal med Vipps</div>
+            <div style="font-size:.85rem;opacity:.6;line-height:1.7;margin-bottom:1rem">Trykk på knappen under for å betale trygt med Vipps. Du sendes tilbake hit etter betaling er fullført.</div>
+            <button onclick="handleVippsPayment()" style="width:100%;background:#ff5b24;border:none;border-radius:8px;padding:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.6rem;font-family:'DM Sans',sans-serif;font-weight:800;font-size:1rem;color:#fff;transition:opacity .2s">
+              <span style="font-size:1.2rem;font-family:'Bebas Neue',sans-serif;letter-spacing:1px">v<span style="color:#fff;opacity:.85">ipps</span></span>
+              <span>Betal med Vipps</span>
+            </button>
+            <div style="margin-top:.8rem;font-size:.73rem;opacity:.35;text-align:center">Sikker betaling via Vipps MobilePay</div>
+          </div>
+        </div>
+        <div class="ck-right">
+          <div class="ck-summary-box">
+            <div class="ck-section-label">Bestillingsoversikt</div>
+            <div id="ckSummaryItems2"></div>
+            <div class="ck-summary-row"><span>Frakt</span><span class="ck-free">Gratis</span></div>
+            <div class="ck-summary-total"><span>Total</span><span id="ckTotal2">0 kr</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="ck-footer">
+        <button class="ck-back-btn" onclick="goToStep1()">← Tilbake</button>
+        <button class="ck-next-btn" onclick="goToStep3()">Fortsett til bekreftelse →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: CONFIRM -->
+    <div id="ckStep3" style="display:none">
+      <div class="ck-header">
+        <button class="ck-close" onclick="closeCheckout()">✕</button>
+        <h2>Bekreft bestilling</h2>
+      </div>
+      <div class="ck-body">
+        <div class="ck-left">
+          <div class="ck-section-label">Leveringsinfo</div>
+          <div class="ck-confirm-box" id="confirmDelivery"></div>
+          <div class="ck-section-label" style="margin-top:1.2rem">Betalingsmåte</div>
+          <div class="ck-confirm-box" id="confirmPayment"></div>
+        </div>
+        <div class="ck-right">
+          <div class="ck-summary-box">
+            <div class="ck-section-label">Bestillingsoversikt</div>
+            <div id="ckSummaryItems3"></div>
+            <div class="ck-summary-row"><span>Frakt</span><span class="ck-free">Gratis</span></div>
+            <div class="discount-row" id="discountRow" style="display:none"><span>Rabatt (<span id="discountCodeLabel"></span>)</span><span id="discountAmount"></span></div>
+            <div class="ck-summary-total"><span>Total</span><span id="ckTotal3">0 kr</span></div>
+          </div>
+          <div class="ck-section-label" style="margin-top:1.2rem">Rabattkode</div>
+          <div class="discount-wrap">
+            <input class="discount-input" id="discountInput" type="text" placeholder="Skriv inn kode..." />
+            <button class="discount-apply" onclick="applyDiscount()">Bruk</button>
+          </div>
+          <div class="discount-msg" id="discountMsg"></div>
+          <div id="step3ValidationMsg" class="ck-validation-msg" style="margin-top:.8rem"></div>
+          <button id="confirmBtn" class="ck-confirm-btn" onclick="submitOrder()">Send bestilling</button>
+          <p style="font-size:.75rem;opacity:.35;margin-top:.8rem;line-height:1.5;text-align:center;">Du mottar en bekreftelse på e-post. Vi leverer innen 1–3 virkedager.</p>
+        </div>
+      </div>
+      <div class="ck-footer">
+        <button class="ck-back-btn" onclick="goToStep2()">← Tilbake</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div id="ckSuccess" style="display:none">
+      <div class="ck-success-wrap">
+        <div class="ck-success-icon">✅</div>
+        <h3>Bestilling mottatt!</h3>
+        <p>Takk, <span id="successName"></span>! Vi sender bekreftelse til <span id="successEmail"></span>.</p>
+        <div class="ck-vipps-payment-reminder">
+          <div style="font-weight:700;margin-bottom:.5rem;font-size:.95rem;">✅ Betaling fullført!</div>
+          <div style="font-size:.85rem;opacity:.75;line-height:1.7;">Beløpet <strong id="successTotal" style="color:var(--lime)"></strong> er betalt via Vipps. Ordrenummer: <strong id="successOrderId" style="color:var(--lime)"></strong></div>
+          <div style="margin-top:.8rem;font-size:.78rem;opacity:.5;line-height:1.6;">En bekreftelse er sendt til din e-post. Vi leverer innen 1–3 virkedager.</div>
+        </div>
+        <button class="ck-next-btn" style="margin-top:1.5rem;width:100%" onclick="closeCheckoutSuccess()">Tilbake til siden</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const products = [
+    { id:1, tag:'Bestselger',   name:'Proteinbar – Sjokolade',  desc:'Klassisk sjokoladeglede pakket med protein. Perfekt mellommåltid.', price:30, protein:'~20g protein', img:null },
+    { id:2, tag:'Ny',           name:'Proteinpudding – Vanilje', desc:'Kremet og mettende. Smaker dessert, fungerer som treningsmat.',   price:35, protein:'~15g protein', img:null },
+    { id:3, tag:'Populær',      name:'Proteinbar – Peanøttsmør', desc:'Saltet peanøttsmør møter protein. En combo vanskelig å si nei til.', price:30, protein:'~21g protein', img:null },
+    { id:4, tag:'Lett & frisk', name:'Proteinbar – Jordbær',     desc:'Frisk og fruktig smak. Lav sukker, høy protein.',               price:30, protein:'~19g protein', img:null }
+  ];
+
+  const svgPlaceholder = `<div class="img-placeholder">
+    <svg width="52" height="52" viewBox="0 0 52 52" fill="none"><rect x="4" y="10" width="44" height="34" rx="5" stroke="white" stroke-width="2"/><circle cx="18" cy="24" r="5" stroke="white" stroke-width="2"/><path d="M4 36 L16 24 L24 32 L34 20 L48 38" stroke="white" stroke-width="2" stroke-linejoin="round"/></svg>
+    <span>Produktbilde</span></div>`;
+
+  let cart = JSON.parse(localStorage.getItem('ps_cart') || '[]');
+
+  function saveCart() { localStorage.setItem('ps_cart', JSON.stringify(cart)); }
+
+  function getStock() {
+    const saved = localStorage.getItem('ps_stock');
+    return saved ? JSON.parse(saved) : null;
+  }
+
+  function stockBadge(status, stock) {
+    if (status === 'out' || stock === 0) return `<span class="stock-badge out">Tomt</span>`;
+    if (status === 'low' || stock <= 5) return `<span class="stock-badge low">Få igjen</span>`;
+    return `<span class="stock-badge in">På lager</span>`;
+  }
+
+  function renderProducts() {
+    const stockData = getStock();
+    document.getElementById('productsGrid').innerHTML = products.map(p => {
+      const s = stockData ? stockData.find(x => x.id === p.id) : null;
+      const status = s ? s.status : 'in';
+      const stock  = s ? s.stock  : 99;
+      const isOut  = status === 'out' || stock === 0;
+      return `
+      <div class="product-card${isOut ? ' out-of-stock' : ''}">
+        <div class="product-img">${p.img ? `<img src="${p.img}" alt="${p.name}" loading="lazy">` : svgPlaceholder}</div>
+        <div class="product-info">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;">
+            <span class="product-tag">${p.tag}</span>
+            ${stockBadge(status, stock)}
+          </div>
+          <div class="product-name">${p.name}</div>
+          <p class="product-desc">${p.desc}</p>
+          <div class="product-footer">
+            <div>
+              <div class="product-price">${p.price} kr</div>
+              <div class="product-macros">${p.protein}</div>
+            </div>
+            ${isOut
+              ? `<button class="add-to-cart out-btn" disabled>Tomt</button>`
+              : `<button class="add-to-cart" onclick="addToCart(${p.id})">+ Legg til</button>`
+            }
+          </div>
+          ${!isOut ? `<div class="delivery-estimate">🚚 Leveres innen 1–3 virkedager</div>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  const orders = [];
+
+  function toggleFaq(el) {
+    const isOpen = el.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) el.classList.add('open');
+  }
+
+  function scrollToId(e, id) {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (!el) return;
+    const navH = document.querySelector('nav').offsetHeight;
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - navH - 20, behavior:'smooth' });
+  }
+
+  function scrollToProducts(e) {
+    e.preventDefault();
+    const firstCard = document.querySelector('#productsGrid .product-card');
+    const target = firstCard || document.getElementById('produkter');
+    const navH = document.querySelector('nav').offsetHeight;
+    window.scrollTo({ top: target.getBoundingClientRect().top + window.scrollY - navH - 20, behavior: 'smooth' });
+  }
+
+  function addToCart(id) {
+    const p = products.find(x => x.id === id);
+    const ex = cart.find(x => x.id === id);
+    ex ? ex.qty++ : cart.push({...p, qty:1});
+    saveCart(); updateCartUI(); openCart();
+  }
+
+  function updateQty(id, delta) {
+    const item = cart.find(x => x.id === id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) cart = cart.filter(x => x.id !== id);
+    saveCart(); updateCartUI();
+  }
+
+  const MIN_ORDER = 60;
+
+  function updateCartUI() {
+    const total = cart.reduce((s,i) => s+i.price*i.qty, 0);
+    const count = cart.reduce((s,i) => s+i.qty, 0);
+    document.getElementById('cartCount').textContent = count;
+    document.getElementById('cartTotal').textContent = total + ' kr';
+    const itemsEl = document.getElementById('cartItems');
+    const emptyEl = document.getElementById('cartEmpty');
+    itemsEl.querySelectorAll('.cart-item').forEach(el => el.remove());
+    if (cart.length === 0) {
+      emptyEl.style.display = 'block';
+      document.getElementById('cartRelated').style.display = 'none';
+      document.getElementById('cartMinimum').style.display = 'none';
+      return;
+    }
+    emptyEl.style.display = 'none';
+    cart.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'cart-item';
+      el.innerHTML = `
+        <div class="cart-item-img">${item.img ? `<img src="${item.img}" alt="${item.name}">` : `<svg width="26" height="26" viewBox="0 0 52 52" fill="none"><rect x="4" y="10" width="44" height="34" rx="5" stroke="rgba(255,255,255,0.2)" stroke-width="2"/><path d="M4 36 L16 24 L24 32 L34 20 L48 38" stroke="rgba(255,255,255,0.2)" stroke-width="2"/></svg>`}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-price">${item.price*item.qty} kr</div>
+        </div>
+        <div class="cart-item-qty">
+          <button class="qty-btn" onclick="updateQty(${item.id},-1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="updateQty(${item.id},1)">+</button>
+        </div>`;
+      itemsEl.appendChild(el);
+    });
+
+    // Minimum order warning
+    const minEl = document.getElementById('cartMinimum');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    if (total < MIN_ORDER) {
+      const remaining = MIN_ORDER - total;
+      minEl.innerHTML = `Vi beklager, men minimum bestilling er ${MIN_ORDER} kr. Legg til for <strong style="color:#ffb800">${remaining} kr</strong> til for å fortsette.`;
+      minEl.style.display = 'block';
+      checkoutBtn.style.opacity = '.45';
+      checkoutBtn.style.pointerEvents = 'none';
+    } else {
+      minEl.style.display = 'none';
+      checkoutBtn.style.opacity = '1';
+      checkoutBtn.style.pointerEvents = 'auto';
+    }
+
+    // Related products – show items NOT in cart
+    const cartIds = cart.map(i => i.id);
+    const stockData = getStock();
+    const related = products.filter(p => {
+      if (cartIds.includes(p.id)) return false;
+      const s = stockData ? stockData.find(x => x.id === p.id) : null;
+      const status = s ? s.status : 'in';
+      const stock  = s ? s.stock  : 99;
+      return status !== 'out' && stock > 0;
+    }).slice(0, 2);
+
+    const relatedSection = document.getElementById('cartRelated');
+    const relatedList    = document.getElementById('cartRelatedList');
+    if (related.length > 0) {
+      relatedSection.style.display = 'block';
+      relatedList.innerHTML = related.map(p => `
+        <div class="cart-related-item" onclick="addToCart(${p.id})">
+          <div class="cart-related-img">
+            ${p.img ? `<img src="${p.img}" alt="${p.name}">` : `<svg width="22" height="22" viewBox="0 0 52 52" fill="none"><rect x="4" y="10" width="44" height="34" rx="5" stroke="rgba(255,255,255,0.2)" stroke-width="2"/><path d="M4 36 L16 24 L24 32 L34 20 L48 38" stroke="rgba(255,255,255,0.2)" stroke-width="2"/></svg>`}
+          </div>
+          <div class="cart-related-info">
+            <div class="cart-related-name">${p.name}</div>
+            <div class="cart-related-price">${p.price} kr</div>
+          </div>
+          <button class="cart-related-add" onclick="event.stopPropagation();addToCart(${p.id})">+ Legg til</button>
+        </div>`).join('');
+    } else {
+      relatedSection.style.display = 'none';
+    }
+  }
+
+  function openCart()  { document.getElementById('cartOverlay').classList.add('open'); document.getElementById('cartDrawer').classList.add('open'); }
+  function closeCart() { document.getElementById('cartOverlay').classList.remove('open'); document.getElementById('cartDrawer').classList.remove('open'); }
+
+  let selectedPayment = 'vipps';
+
+  function renderSummary(itemsId, totalId) {
+    const total = cart.reduce((s,i) => s+i.price*i.qty, 0);
+    document.getElementById(itemsId).innerHTML = cart.map(i =>
+      `<div class="ck-summary-item"><span class="ck-summary-item-name">${i.name} × ${i.qty}</span><span class="ck-summary-item-price">${i.price*i.qty} kr</span></div>`).join('');
+    document.getElementById(totalId).textContent = total + ' kr';
+  }
+
+  function setStep(n) {
+    [1,2,3].forEach(i => {
+      document.getElementById('ckStep'+i).style.display = i===n ? 'block' : 'none';
+      const ind = document.getElementById('step'+i+'ind');
+      ind.className = 'ck-step' + (i===n?' active':i<n?' done':'');
+    });
+    document.getElementById('ckSuccess').style.display = 'none';
+  }
+
+  function saveCheckoutInfo() {
+    const info = {
+      fname: document.getElementById('chkFname').value,
+      lname: document.getElementById('chkLname').value,
+      email: document.getElementById('chkEmail').value,
+      phone: document.getElementById('chkPhone').value,
+      addr:  document.getElementById('chkAddr').value,
+      zip:   document.getElementById('chkZip').value,
+      city:  document.getElementById('chkCity').value
+    };
+    localStorage.setItem('ps_checkoutinfo', JSON.stringify(info));
+  }
+
+  function loadCheckoutInfo() {
+    const saved = localStorage.getItem('ps_checkoutinfo');
+    if (!saved) return;
+    const info = JSON.parse(saved);
+    if (info.fname) document.getElementById('chkFname').value = info.fname;
+    if (info.lname) document.getElementById('chkLname').value = info.lname;
+    if (info.email) document.getElementById('chkEmail').value = info.email;
+    if (info.phone) document.getElementById('chkPhone').value = info.phone;
+    if (info.addr)  document.getElementById('chkAddr').value  = info.addr;
+    if (info.zip)   document.getElementById('chkZip').value   = info.zip;
+    if (info.city)  document.getElementById('chkCity').value  = info.city;
+  }
+
+  function openCheckout() {
+    if (cart.length === 0) {
+      alert('Handlekurven er tom – legg til produkter først!');
+      return;
+    }
+    const total = cart.reduce((s,i) => s+i.price*i.qty, 0);
+    if (total < MIN_ORDER) {
+      alert(`Minimum bestilling er ${MIN_ORDER} kr. Legg til for ${MIN_ORDER - total} kr til.`);
+      return;
+    }
+    closeCart();
+    renderSummary('ckSummaryItems1','ckTotal1');
+    setStep(1);
+    document.getElementById('checkoutOverlay').classList.add('open');
+    loadCheckoutInfo();
+  }
+
+  function closeCheckout() {
+    document.getElementById('checkoutOverlay').classList.remove('open');
+    openCart();
+  }
+
+  function goToStep2() {
+    const ids = ['chkFname','chkLname','chkEmail','chkPhone','chkAddr','chkZip','chkCity'];
+    let missingAny = false;
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el.value.trim()) { el.style.borderColor='rgba(255,80,80,0.7)'; missingAny=true; }
+      else { el.style.borderColor=''; }
+    });
+    if (missingAny) { document.getElementById('step1ValidationMsg').style.display='block'; return; }
+    document.getElementById('step1ValidationMsg').style.display='none';
+    renderSummary('ckSummaryItems2','ckTotal2');
+    setStep(2);
+  }
+
+  function goToStep1() { renderSummary('ckSummaryItems1','ckTotal1'); setStep(1); }
+
+  function selectPayment(type) {
+    if (type === 'kort') return; // ikke tilgjengelig enda
+    selectedPayment = type;
+    document.getElementById('payVipps').className = 'ck-payment-option' + (type==='vipps'?' selected':'');
+    document.getElementById('radioVipps').style.display = type==='vipps'?'block':'none';
+    document.getElementById('vippsInfo').style.display = type==='vipps'?'flex':'none';
+  }
+
+  function goToStep3() {
+    const fname = document.getElementById('chkFname').value.trim();
+    const lname = document.getElementById('chkLname').value.trim();
+    const email = document.getElementById('chkEmail').value.trim();
+    const phone = document.getElementById('chkPhone').value.trim();
+    const addr  = document.getElementById('chkAddr').value.trim();
+    const zip   = document.getElementById('chkZip').value.trim();
+    const city  = document.getElementById('chkCity').value.trim();
+    document.getElementById('confirmDelivery').innerHTML =
+      `<strong>${fname} ${lname}</strong><br>${email}<br>${phone}<br>${addr}, ${zip} ${city}`;
+    document.getElementById('confirmPayment').innerHTML = '<strong>Vipps</strong> – betaling via Vipps Checkout';
+    renderSummary('ckSummaryItems3','ckTotal3');
+    activeDiscount = null;
+    document.getElementById('discountInput').value = '';
+    document.getElementById('discountMsg').textContent = '';
+    document.getElementById('discountRow').style.display = 'none';
+    setStep(3);
+  }
+
+  function goToStep2from3() { renderSummary('ckSummaryItems2','ckTotal2'); setStep(2); }
+
+  // ── EMAILJS CONFIG – aktiveres når Vipps Checkout er på plass ──
+  const EMAILJS_PUBLIC_KEY  = 'AV4LEKR9QYp3N2gjA';
+  const EMAILJS_SERVICE_ID  = 'service_7k1b7f6';
+  const EMAILJS_TEMPLATE_ID = 'template_ms5zyym';
+  const EMAILJS_ACTIVE      = false; // Sett til true når Vipps Checkout er aktivert
+
+  function sendOrderConfirmation(order) {
+    if (!EMAILJS_ACTIVE) return;
+    emailjs.init(EMAILJS_PUBLIC_KEY);
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      to_email:  order.epost,
+      to_name:   order.navn.split(' ')[0],
+      order_id:  order.ordreId,
+      produkter: order.produkter.map(p => p.navn + ' × ' + p.antall).join(', '),
+      totalt:    order.totalt + ' kr',
+      adresse:   order.adresse,
+      email:     order.epost
+    }).catch(err => console.error('EmailJS feil:', err));
+  }
+
+  // ── VIPPS CHECKOUT – placeholder til org.nr. er klart ──
+  // Bytt ut VIPPS_MSN med ekte MSN-nummer fra Vipps MobilePay-portalen
+  const VIPPS_MSN      = 'XXXXXX';       // Merchant Serial Number
+  const VIPPS_ACTIVE   = false;          // Sett til true når Vipps Checkout er aktivert
+
+  function handleVippsPayment() {
+    if (!VIPPS_ACTIVE) {
+      // Placeholder – går videre til bekreftelse inntil Vipps er aktivert
+      goToStep3();
+      return;
+    }
+    // Ekte Vipps Checkout-integrasjon aktiveres her med org.nr.
+    // Se: https://developer.vippsmobilepay.com/docs/APIs/checkout-api/
+    const total = cart.reduce((s,i) => s+i.price*i.qty, 0);
+    alert('Vipps Checkout: ' + total + ' kr – integreres med org.nr.');
+  }
+
+  function submitOrder() {
+    const ordreId = 'PS-' + Date.now().toString().slice(-6);
+    const fname = document.getElementById('chkFname').value.trim();
+    const lname = document.getElementById('chkLname').value.trim();
+    const email = document.getElementById('chkEmail').value.trim();
+    const phone = document.getElementById('chkPhone').value.trim();
+    const addr  = document.getElementById('chkAddr').value.trim();
+    const zip   = document.getElementById('chkZip').value.trim();
+    const city  = document.getElementById('chkCity').value.trim();
+    const base  = cart.reduce((s,i) => s+i.price*i.qty, 0);
+    const total = activeDiscount ? base - Math.round(base * activeDiscount.pct / 100) : base;
+
+    // Save order to localStorage so admin can see it
+    const order = {
+      ordreId,
+      navn: fname + ' ' + lname,
+      epost: email,
+      telefon: phone,
+      adresse: addr + ', ' + zip + ' ' + city,
+      produkter: cart.map(i => ({ navn: i.name, antall: i.qty, pris: i.price * i.qty })),
+      rabatt: activeDiscount || null,
+      totalt: total,
+      status: 'pending',
+      tidspunkt: new Date().toLocaleString('no-NO')
+    };
+    const existing = JSON.parse(localStorage.getItem('ps_orders') || '[]');
+    existing.push(order);
+    localStorage.setItem('ps_orders', JSON.stringify(existing));
+
+    sendOrderConfirmation(order);
+
+    document.getElementById('successName').textContent = fname;
+    document.getElementById('successEmail').textContent = email;
+    document.getElementById('successTotal').textContent = total + ' kr';
+    document.getElementById('successOrderId').textContent = ordreId;
+
+    [1,2,3].forEach(i => document.getElementById('ckStep'+i).style.display='none');
+    document.getElementById('ckSteps').style.display='none';
+    document.getElementById('ckSuccess').style.display='block';
+    cart = []; saveCart(); updateCartUI();
+  }
+
+  function closeCheckoutSuccess() {
+    document.getElementById('checkoutOverlay').classList.remove('open');
+    document.getElementById('ckSteps').style.display='flex';
+  }
+
+  // ── COOKIE BANNER ──
+  function initCookies() {
+    if (!localStorage.getItem('ps_cookies')) {
+      document.getElementById('cookieBanner').classList.remove('hidden');
+    } else {
+      document.getElementById('cookieBanner').classList.add('hidden');
+    }
+  }
+  function acceptCookies() {
+    localStorage.setItem('ps_cookies', 'accepted');
+    document.getElementById('cookieBanner').classList.add('hidden');
+  }
+  function declineCookies() {
+    localStorage.setItem('ps_cookies', 'declined');
+    document.getElementById('cookieBanner').classList.add('hidden');
+  }
+
+  // ── DISCOUNT CODES ──
+  let activeDiscount = null;
+
+  function getDiscountCodes() {
+    const saved = localStorage.getItem('ps_discounts');
+    return saved ? JSON.parse(saved) : [
+      { code:'SNADDER10', pct:10, desc:'10% rabatt' },
+      { code:'TRONDHEIM', pct:15, desc:'15% rabatt' },
+      { code:'PROTEIN20', pct:20, desc:'20% rabatt' }
+    ];
+  }
+
+  function applyDiscount() {
+    const code = document.getElementById('discountInput').value.trim().toUpperCase();
+    const msg  = document.getElementById('discountMsg');
+    if (!code) { msg.className='discount-msg err'; msg.textContent='Skriv inn en kode.'; return; }
+    const codes = getDiscountCodes();
+    const d = codes.find(x => x.code === code);
+    if (!d) { msg.className='discount-msg err'; msg.textContent='Ugyldig kode. Prøv igjen.'; activeDiscount=null; updateStep3Total(); return; }
+    activeDiscount = { code: d.code, pct: d.pct };
+    msg.className = 'discount-msg ok';
+    msg.textContent = `✓ Kode "${d.code}" er aktivert – ${d.pct}% rabatt!`;
+    updateStep3Total();
+  }
+
+  function updateStep3Total() {
+    const base = cart.reduce((s,i) => s+i.price*i.qty, 0);
+    const discountRow = document.getElementById('discountRow');
+    const discountAmt = document.getElementById('discountAmount');
+    const discountLabel = document.getElementById('discountCodeLabel');
+    const totalEl = document.getElementById('ckTotal3');
+    if (activeDiscount) {
+      const saved = Math.round(base * activeDiscount.pct / 100);
+      const final = base - saved;
+      discountRow.style.display = 'flex';
+      discountLabel.textContent = activeDiscount.code;
+      discountAmt.textContent = '-' + saved + ' kr';
+      totalEl.textContent = final + ' kr';
+    } else {
+      discountRow.style.display = 'none';
+      totalEl.textContent = base + ' kr';
+    }
+  }
+
+  // ── SITE CONTENT ──
+  function initSiteContent() {
+    const data = localStorage.getItem('ps_content');
+    if (!data) return;
+    const c = JSON.parse(data);
+
+    // Hero
+    if (c.hero) {
+      const h = c.hero;
+      if (h.eyebrow) { const el = document.querySelector('.hero-eyebrow'); if(el) el.textContent = h.eyebrow; }
+      if (h.line1 || h.line2) {
+        const h1 = document.querySelector('.hero h1');
+        if (h1) h1.innerHTML = (h.line1||'PROTEIN') + '<br><span class="accent">' + (h.line2||'SNADDER') + '</span>';
+      }
+      if (h.sub) { const el = document.querySelector('.hero-sub'); if(el) el.textContent = h.sub; }
+    }
+
+    // Om oss
+    if (c.omos) {
+      const o = c.omos;
+      const p1el = document.getElementById('omosP1');
+      const p2el = document.getElementById('omosP2');
+      if (p1el && o.p1) p1el.textContent = o.p1;
+      if (p2el && o.p2) p2el.textContent = o.p2;
+      if (o.values) {
+        const valList = document.querySelector('.omos-values');
+        if (valList) valList.innerHTML = o.values.map(v =>
+          `<div class="omos-value"><div class="omos-value-dot"></div><div class="omos-value-text">${v.text}</div></div>`
+        ).join('');
+      }
+      if (o.stats) {
+        const cards = document.querySelectorAll('.omos-stat-card');
+        o.stats.forEach((s,i) => {
+          if (!cards[i]) return;
+          const numEl = cards[i].querySelector('.omos-stat-num');
+          const labEl = cards[i].querySelector('.omos-stat-label');
+          if (numEl && s.num) numEl.textContent = s.num;
+          if (labEl) labEl.innerHTML = s.label + (s.sub ? '<br><span style="opacity:.5;font-size:.75rem">'+s.sub+'</span>' : '');
+        });
+      }
+    }
+
+    // FAQ
+    if (c.faq && c.faq.length) {
+      const faqList = document.querySelector('.faq-list');
+      if (faqList) faqList.innerHTML = c.faq.map(f => `
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-question">${f.q} <span class="faq-arrow">▼</span></div>
+          <div class="faq-answer">${f.a}</div>
+        </div>`).join('');
+    }
+  }
+
+  // ── ANNOUNCEMENT BAR ──
+  function initAnnBar() {
+    const data = localStorage.getItem('ps_announcements');
+    if (!data) return;
+    const ann = JSON.parse(data);
+    if (!ann.bar || !ann.bar.enabled || !ann.bar.text) return;
+    const dismissed = sessionStorage.getItem('ann_bar_dismissed');
+    if (dismissed === ann.bar.text) return;
+    const bar = document.getElementById('annBar');
+    const content = document.getElementById('annBarContent');
+    bar.style.background = ann.bar.bg || '#c5f135';
+    bar.style.color = ann.bar.fg || '#080909';
+    document.getElementById('annBarClose').style.color = ann.bar.fg || '#080909';
+    content.innerHTML = ann.bar.link
+      ? `<a href="${ann.bar.link}" style="color:${ann.bar.fg||'#080909'}">${ann.bar.text} →</a>`
+      : ann.bar.text;
+    bar.style.display = 'block';
+    // Offset nav for bar height
+    setTimeout(() => {
+      const navEl = document.querySelector('nav');
+      navEl.style.top = bar.offsetHeight + 'px';
+    }, 50);
+  }
+  function closeAnnBar() {
+    const bar = document.getElementById('annBar');
+    const text = document.getElementById('annBarContent').textContent;
+    sessionStorage.setItem('ann_bar_dismissed', text);
+    bar.style.display = 'none';
+    document.querySelector('nav').style.top = '0';
+  }
+
+  // ── MAINTENANCE MODE – runs first ──
+  (function() {
+    const sw = JSON.parse(localStorage.getItem('ps_siteswitch') || 'null');
+    if (sw && sw.enabled === false) {
+      document.body.innerHTML = `
+        <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:2rem;background:#080909;color:#f2ede4;font-family:'DM Sans',sans-serif">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(3rem,10vw,7rem);line-height:.9;letter-spacing:4px;margin-bottom:1.5rem">
+            PROTEIN<br><span style="color:#c5f135">SNADDER</span>
+          </div>
+          <div style="font-size:1.3rem;font-weight:700;margin-bottom:1rem">${sw.maintTitle || 'Vi er snart tilbake!'}</div>
+          <div style="opacity:.55;font-size:.95rem;line-height:1.75;max-width:420px;margin-bottom:${sw.maintTime?'1rem':'0'}">${sw.maintMsg || 'Vi jobber med noen forbedringer og åpner igjen snart.'}</div>
+          ${sw.maintTime ? `<div style="font-size:.82rem;color:#c5f135;font-weight:700;opacity:.8">Estimert åpning: ${sw.maintTime}</div>` : ''}
+          <div style="margin-top:3rem;font-size:.72rem;opacity:.2;letter-spacing:2px;text-transform:uppercase">© 2025 Protein Snadder UB</div>
+        </div>`;
+    }
+  })();
+
+  renderProducts();
+  updateCartUI();
+  initCookies();
+  initAnnBar();
+  initSiteContent();
+
+  // Åpne handlekurv automatisk hvis man kommer fra en annen side
+  if (window.location.hash === '#handlekurv') {
+    setTimeout(() => { openCart(); history.replaceState(null, '', ' '); }, 300);
+  }
+</script>
+
+</body>
+</html>
