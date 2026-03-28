@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Protein Bloggen – Protein Snadder UB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root { --black:#080909; --white:#f2ede4; --lime:#c5f135; --lime-dim:rgba(197,241,53,0.12); --card:#111310; --border:rgba(255,255,255,0.07); }
+    html { scroll-behavior:smooth; }
+    body { font-family:'DM Sans',sans-serif; background:var(--black); color:var(--white); overflow-x:hidden; min-height:100vh; }
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-track { background:var(--black); }
+    ::-webkit-scrollbar-thumb { background:var(--lime); border-radius:3px; }
+
+    /* NAV */
+    nav { position:fixed; top:0; left:0; width:100%; z-index:200; display:flex; align-items:center; justify-content:space-between; padding:1.1rem 2.5rem; background:rgba(8,9,9,0.9); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); }
+    .nav-logo { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:2px; color:var(--lime); text-decoration:none; white-space:nowrap; }
+    .nav-right { display:flex; align-items:center; gap:0.75rem; }
+    .nav-link-btn { background:none; border:1px solid var(--border); color:var(--white); font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500; padding:0.5rem 1rem; border-radius:6px; cursor:pointer; text-decoration:none; transition:border-color .2s,color .2s; white-space:nowrap; }
+    .nav-link-btn:hover { border-color:rgba(197,241,53,0.4); color:var(--lime); }
+    .nav-link-btn.active { border-color:rgba(197,241,53,0.4); color:var(--lime); background:var(--lime-dim); }
+
+    /* SECTION LABEL */
+    .section-label { font-size:.72rem; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:var(--lime); margin-bottom:.8rem; }
+
+    /* PAGE HERO */
+    .page-hero { padding:9rem 2.5rem 4rem; max-width:1140px; margin:0 auto; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(3.5rem,9vw,6.5rem); line-height:.9; letter-spacing:4px; animation:fadeUp .7s ease both; }
+    .page-title span { color:var(--lime); }
+    .page-sub { max-width:540px; margin:1.5rem 0 0; font-size:1rem; line-height:1.75; opacity:0.6; animation:fadeUp .7s .1s ease both; }
+
+    /* CATEGORIES */
+    .categories { max-width:1140px; margin:0 auto; padding:0 2.5rem 3rem; display:flex; gap:.6rem; flex-wrap:wrap; }
+    .cat-btn { background:none; border:1px solid var(--border); color:var(--white); font-family:'DM Sans',sans-serif; font-size:.78rem; font-weight:600; padding:.45rem 1rem; border-radius:999px; cursor:pointer; transition:all .2s; opacity:.55; }
+    .cat-btn:hover { opacity:1; border-color:rgba(197,241,53,.3); }
+    .cat-btn.active { background:var(--lime-dim); border-color:rgba(197,241,53,.4); color:var(--lime); opacity:1; }
+
+    /* BLOG GRID */
+    .blog-section { max-width:1140px; margin:0 auto; padding:0 2.5rem 8rem; }
+    .blog-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:1.5rem; }
+    .blog-empty { opacity:.35; font-size:.95rem; text-align:center; padding:5rem 0; grid-column:1/-1; }
+
+    /* BLOG CARD */
+    .blog-card { background:var(--card); border:1px solid var(--border); border-radius:14px; overflow:hidden; cursor:pointer; transition:transform .22s,border-color .22s,box-shadow .22s; text-decoration:none; color:var(--white); display:flex; flex-direction:column; }
+    .blog-card:hover { transform:translateY(-5px); border-color:rgba(197,241,53,.25); box-shadow:0 16px 50px rgba(0,0,0,.5); }
+    .blog-card-img { width:100%; aspect-ratio:16/9; background:linear-gradient(135deg,#181d12,#1e2619); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .blog-card-img img { width:100%; height:100%; object-fit:cover; transition:transform .4s; }
+    .blog-card:hover .blog-card-img img { transform:scale(1.04); }
+    .blog-card-img-placeholder { font-family:'Bebas Neue',sans-serif; font-size:3rem; color:var(--lime); opacity:.12; letter-spacing:2px; text-align:center; padding:1rem; }
+    .blog-card-body { padding:1.4rem; flex:1; display:flex; flex-direction:column; }
+    .blog-card-meta { display:flex; align-items:center; gap:.8rem; margin-bottom:.8rem; }
+    .blog-card-cat { font-size:.65rem; font-weight:800; letter-spacing:2.5px; text-transform:uppercase; color:var(--lime); background:var(--lime-dim); border-radius:3px; padding:.2rem .6rem; }
+    .blog-card-date { font-size:.73rem; opacity:.4; }
+    .blog-card-title { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; letter-spacing:1px; line-height:1.05; margin-bottom:.6rem; }
+    .blog-card-excerpt { font-size:.83rem; opacity:.55; line-height:1.65; flex:1; }
+    .blog-card-footer { display:flex; align-items:center; justify-content:space-between; margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--border); }
+    .blog-card-author { font-size:.75rem; opacity:.4; font-weight:500; }
+    .blog-card-read { font-size:.72rem; font-weight:700; color:var(--lime); letter-spacing:.5px; }
+
+    /* ARTICLE VIEW */
+    .article-view { display:none; max-width:720px; margin:0 auto; padding:9rem 2rem 5rem; }
+    .article-back { display:inline-flex; align-items:center; gap:.5rem; font-size:.82rem; font-weight:600; color:var(--white); opacity:.5; cursor:pointer; margin-bottom:2.5rem; transition:opacity .2s; background:none; border:none; }
+    .article-back:hover { opacity:1; color:var(--lime); }
+    .article-cat { font-size:.7rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--lime); margin-bottom:.8rem; }
+    .article-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(2.5rem,7vw,4.5rem); line-height:.92; letter-spacing:2px; margin-bottom:1.2rem; }
+    .article-meta { display:flex; gap:1.5rem; margin-bottom:2.5rem; padding-bottom:1.5rem; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+    .article-meta span { font-size:.78rem; opacity:.4; }
+    .article-img { width:100%; aspect-ratio:16/9; background:linear-gradient(135deg,#181d12,#1e2619); border-radius:12px; overflow:hidden; margin-bottom:2.5rem; display:flex; align-items:center; justify-content:center; }
+    .article-img img { width:100%; height:100%; object-fit:cover; }
+    .article-img-placeholder { font-family:'Bebas Neue',sans-serif; font-size:4rem; color:var(--lime); opacity:.1; }
+    .article-body { font-size:.97rem; line-height:1.9; opacity:.8; }
+    .article-body p { margin-bottom:1.4rem; }
+    .article-body h2 { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:1px; color:var(--lime); margin:2rem 0 .8rem; opacity:1; }
+    .article-body h3 { font-size:1.05rem; font-weight:700; margin:1.5rem 0 .6rem; opacity:1; }
+    .article-body ul, .article-body ol { padding-left:1.5rem; margin-bottom:1.4rem; }
+    .article-body li { margin-bottom:.4rem; }
+    .article-body strong { color:var(--white); opacity:1; font-weight:700; }
+
+    /* COMMENTS */
+    .comments-wrap { margin-top:3rem; padding-top:2.5rem; border-top:1px solid var(--border); }
+    .comments-heading { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:1px; margin-bottom:1.5rem; }
+    .comment-form-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.4rem; margin-bottom:2rem; }
+    .comment-form-label { font-size:.68rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--lime); opacity:.8; margin-bottom:1rem; }
+    .c-row { display:grid; grid-template-columns:1fr 1fr; gap:.8rem; margin-bottom:.8rem; }
+    .c-input { background:#0e110d; border:1px solid var(--border); border-radius:7px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.88rem; padding:.75rem 1rem; outline:none; width:100%; transition:border-color .2s,box-shadow .2s; }
+    .c-input:focus { border-color:rgba(197,241,53,.35); box-shadow:0 0 0 3px rgba(197,241,53,.07); }
+    .c-ta { resize:vertical; min-height:90px; }
+    .c-btn { background:var(--lime); color:var(--black); font-family:'DM Sans',sans-serif; font-weight:800; font-size:.85rem; padding:.7rem 1.6rem; border-radius:6px; border:none; cursor:pointer; margin-top:.6rem; transition:box-shadow .2s,transform .15s; }
+    .c-btn:hover { box-shadow:0 4px 16px rgba(197,241,53,.28); transform:translateY(-1px); }
+    .c-success { display:none; color:var(--lime); font-size:.82rem; margin-top:.6rem; font-weight:600; }
+    .comments-list { display:flex; flex-direction:column; gap:1rem; }
+    .comment-item { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1.2rem 1.4rem; }
+    .comment-item.pinned { border-color:rgba(197,241,53,.3); background:rgba(197,241,53,.03); }
+    .c-pin-badge { font-size:.6rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--lime); display:block; margin-bottom:.5rem; }
+    .c-header { display:flex; align-items:center; gap:.8rem; margin-bottom:.5rem; }
+    .c-avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,#1e2619,#2a3520); display:flex; align-items:center; justify-content:center; font-size:.75rem; font-weight:800; color:var(--lime); flex-shrink:0; }
+    .c-name { font-weight:700; font-size:.88rem; }
+    .c-date { font-size:.72rem; opacity:.38; margin-left:auto; }
+    .c-text { font-size:.87rem; opacity:.7; line-height:1.7; white-space:pre-wrap; }
+    .c-empty { opacity:.35; font-size:.88rem; text-align:center; padding:1.5rem 0; }
+
+    /* Q&A */
+    .qa-view { display:none; max-width:780px; margin:0 auto; padding:9rem 2rem 7rem; }
+    .qa-form-box { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:2rem; margin-bottom:2rem; }
+    .qa-form-box h2 { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:1px; margin-bottom:.3rem; }
+    .qa-form-box > p { opacity:.5; font-size:.83rem; margin-bottom:1.5rem; line-height:1.6; }
+    .qa-list { display:flex; flex-direction:column; gap:1.2rem; }
+    /* Forum thread - list view (collapsed) */
+    .qa-thread {
+      background:var(--card); border:1px solid var(--border); border-radius:12px;
+      cursor:pointer; transition:border-color .2s,box-shadow .2s,transform .15s;
+    }
+    .qa-thread:hover { border-color:rgba(197,241,53,.25); box-shadow:0 6px 24px rgba(0,0,0,.4); transform:translateY(-2px); }
+    .qa-thread.pinned { border-color:rgba(197,241,53,.35); background:rgba(197,241,53,.02); }
+    .qa-thread-q { padding:1.4rem 1.6rem; }
+    .qa-thread-header { display:flex; align-items:center; gap:.7rem; margin-bottom:.7rem; }
+    .qa-thread-avatar {
+      width:38px; height:38px; border-radius:50%;
+      background:linear-gradient(135deg,var(--lime-dim),rgba(197,241,53,.25));
+      border:2px solid rgba(197,241,53,.3);
+      display:flex; align-items:center; justify-content:center;
+      font-size:.85rem; font-weight:800; color:var(--lime); flex-shrink:0;
+    }
+    .qa-thread-name { font-weight:700; font-size:.92rem; }
+    .qa-thread-date { font-size:.7rem; opacity:.35; margin-left:auto; }
+    .qa-pin-badge { font-size:.6rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--lime); background:var(--lime-dim); border-radius:3px; padding:.15rem .5rem; }
+    .qa-thread-qtxt { font-size:1rem; font-weight:600; line-height:1.55; opacity:.95; margin-bottom:.7rem; }
+    .qa-thread-footer { display:flex; align-items:center; gap:1rem; }
+    .qa-thread-replies-badge { font-size:.72rem; font-weight:700; color:var(--lime); opacity:.7; }
+    .qa-thread-open-hint { font-size:.7rem; opacity:.3; margin-left:auto; }
+
+    /* Forum thread - detail view (expanded) */
+    .qa-detail-view { display:none; max-width:780px; margin:0 auto; padding:9rem 2rem 7rem; }
+    .qa-detail-question {
+      background:var(--card); border:1px solid rgba(197,241,53,.2);
+      border-radius:14px; padding:1.8rem; margin-bottom:1.5rem;
+    }
+    .qa-detail-header { display:flex; align-items:center; gap:.8rem; margin-bottom:1rem; }
+    .qa-detail-avatar {
+      width:44px; height:44px; border-radius:50%;
+      background:linear-gradient(135deg,var(--lime-dim),rgba(197,241,53,.3));
+      border:2px solid rgba(197,241,53,.4);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1rem; font-weight:800; color:var(--lime); flex-shrink:0;
+    }
+    .qa-detail-name { font-weight:700; font-size:1rem; }
+    .qa-detail-date { font-size:.75rem; opacity:.35; }
+    .qa-detail-qtxt { font-size:1.05rem; line-height:1.7; opacity:.9; white-space:pre-wrap; }
+    .qa-replies-heading { font-size:.68rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--lime); opacity:.7; margin:2rem 0 1rem; }
+    .qa-replies-list { display:flex; flex-direction:column; gap:.8rem; margin-bottom:1.5rem; }
+    .qa-reply-item { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1rem 1.2rem; }
+    .qa-reply-item.admin-reply { border-color:rgba(197,241,53,.2); background:rgba(197,241,53,.03); }
+    .qa-reply-header { display:flex; align-items:center; gap:.7rem; margin-bottom:.45rem; }
+    .qa-reply-avatar { width:28px; height:28px; border-radius:50%; background:rgba(255,255,255,.07); display:flex; align-items:center; justify-content:center; font-size:.7rem; font-weight:800; color:var(--white); flex-shrink:0; }
+    .qa-reply-item.admin-reply .qa-reply-avatar { background:var(--lime); color:var(--black); }
+    .qa-reply-name { font-weight:700; font-size:.85rem; }
+    .qa-reply-item.admin-reply .qa-reply-name { color:var(--lime); }
+    .qa-reply-date { font-size:.68rem; opacity:.32; margin-left:auto; }
+    .qa-reply-txt { font-size:.87rem; opacity:.72; line-height:1.65; white-space:pre-wrap; }
+    .qa-reply-form-box { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.3rem; }
+    .qa-reply-form-label { font-size:.68rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--lime); opacity:.75; margin-bottom:.8rem; }
+    .qa-reply-input { width:100%; background:#0e110d; border:1px solid var(--border); border-radius:7px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.88rem; padding:.75rem 1rem; outline:none; resize:vertical; min-height:80px; margin-bottom:.8rem; transition:border-color .2s; }
+    .qa-reply-input:focus { border-color:rgba(197,241,53,.35); box-shadow:0 0 0 3px rgba(197,241,53,.07); }
+    .qa-reply-name-input { background:#0e110d; border:1px solid var(--border); border-radius:6px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.85rem; padding:.65rem .9rem; outline:none; width:100%; margin-bottom:.8rem; }
+    .qa-reply-btn { background:var(--lime); color:var(--black); font-family:'DM Sans',sans-serif; font-weight:800; font-size:.85rem; padding:.75rem 1.8rem; border-radius:6px; border:none; cursor:pointer; transition:box-shadow .2s,transform .15s; }
+    .qa-reply-btn:hover { box-shadow:0 4px 16px rgba(197,241,53,.3); transform:translateY(-1px); }
+    .qa-empty { opacity:.35; font-size:.88rem; text-align:center; padding:2.5rem 0; }
+    /* Nested replies */
+    .qa-reply-actions { display:flex; align-items:center; gap:.8rem; margin-top:.45rem; }
+    .qa-reply-btn-small { background:none; border:none; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.72rem; font-weight:600; opacity:.35; cursor:pointer; padding:0; transition:opacity .2s,color .2s; }
+    .qa-reply-btn-small:hover { opacity:1; color:var(--lime); }
+    .qa-nested-form { display:none; margin-top:.7rem; padding:.8rem 1rem; background:rgba(255,255,255,.03); border-radius:8px; border:1px solid var(--border); }
+    .qa-nested-form.open { display:block; }
+    .qa-nested-name { width:100%; background:#0e110d; border:1px solid var(--border); border-radius:6px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.82rem; padding:.55rem .8rem; outline:none; margin-bottom:.5rem; }
+    .qa-nested-text { width:100%; background:#0e110d; border:1px solid var(--border); border-radius:6px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.82rem; padding:.55rem .8rem; outline:none; resize:vertical; min-height:60px; margin-bottom:.5rem; }
+    .qa-nested-name:focus, .qa-nested-text:focus { border-color:rgba(197,241,53,.35); }
+    .qa-nested-actions { display:flex; gap:.5rem; }
+    .qa-nested-submit { background:var(--lime); color:var(--black); font-family:'DM Sans',sans-serif; font-weight:800; font-size:.75rem; padding:.45rem 1rem; border-radius:5px; border:none; cursor:pointer; }
+    .qa-nested-cancel { background:none; border:1px solid var(--border); color:var(--white); font-family:'DM Sans',sans-serif; font-size:.75rem; padding:.45rem .8rem; border-radius:5px; cursor:pointer; }
+    /* Indented children */
+    .qa-children { margin-top:.6rem; padding-left:1rem; border-left:2px solid rgba(197,241,53,.15); display:flex; flex-direction:column; gap:.6rem; }
+
+    /* FOOTER */
+    footer { border-top:1px solid var(--border); padding:2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+    .footer-logo { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:2px; color:var(--lime); }
+    .footer-copy { font-size:.78rem; opacity:.32; }
+    .footer-links { display:flex; gap:1.5rem; }
+    .footer-links a { font-size:.78rem; opacity:.38; color:var(--white); text-decoration:none; transition:opacity .2s; }
+    .footer-links a:hover { opacity:1; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    @media(max-width:640px) {
+      nav{padding:1rem 1.2rem;} .nav-link-btn{font-size:.72rem;padding:.38rem .55rem;}
+      footer{flex-direction:column;align-items:flex-start;}
+      .page-hero{padding:8rem 1.2rem 3rem;} .categories{padding:0 1.2rem 2rem;}
+      .blog-section{padding:0 1.2rem 5rem;} .c-row{grid-template-columns:1fr;}
+    }
+  </style>
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Protein Snadder UB</a>
+  <div class="nav-right">
+    <a href="kontakt.html" class="nav-link-btn">Ta Kontakt</a>
+    <a href="team.html" class="nav-link-btn">Møt Teamet</a>
+    <a href="blogg.html" class="nav-link-btn active">Protein Bloggen</a>
+    <button onclick="psOpenCart()" class="nav-link-btn" style="background:var(--lime-dim);border-color:rgba(197,241,53,.2);color:var(--lime);font-weight:700;cursor:pointer">Handlekurv <span class="ps-cart-count" style="background:var(--lime);color:var(--black);border-radius:999px;font-size:.65rem;font-weight:800;padding:.1rem .45rem;margin-left:.2rem;display:none;align-items:center;justify-content:center">0</span></button>
+  </div>
+</nav>
+
+<!-- BLOG LIST VIEW -->
+<div id="blogListView">
+  <div class="page-hero">
+    <p class="section-label">Kunnskap &amp; inspirasjon</p>
+    <h1 class="page-title">PROTEIN<br><span>BLOGGEN</span></h1>
+    <p class="page-sub">Treningsguider, kostholdstips, proteininfo og mer – alt du trenger for å ta bedre valg. Still spørsmål, kommenter og delta i diskusjonen!</p>
+  </div>
+  <div class="categories">
+    <button class="cat-btn active" onclick="filterCat('alle',this)">Alle</button>
+    <button class="cat-btn" onclick="filterCat('Trening',this)">Trening</button>
+    <button class="cat-btn" onclick="filterCat('Kosthold',this)">Kosthold</button>
+    <button class="cat-btn" onclick="filterCat('Protein',this)">Protein</button>
+    <button class="cat-btn" onclick="filterCat('Trender',this)">Trender</button>
+    <button class="cat-btn" onclick="filterCat('Samarbeid',this)">Samarbeid</button>
+    <button class="cat-btn" onclick="showQAView(this)">❓ Spørsmål & Svar</button>
+  </div>
+  <div class="blog-section">
+    <div class="blog-grid" id="blogGrid"></div>
+  </div>
+</div>
+
+<!-- Q&A VIEW -->
+<div class="qa-view" id="qaView">
+  <button class="article-back" onclick="showBlogList()">← Tilbake til blogg</button>
+  <p class="section-label">Spørsmål & Svar</p>
+  <h1 style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,8vw,5rem);letter-spacing:3px;line-height:.92;margin-bottom:1rem">SPØRSMÅL<br><span style="color:var(--lime)">& SVAR</span></h1>
+  <p style="opacity:.6;line-height:1.75;max-width:500px;margin-bottom:3rem">Lurer du på noe om produktene, trening eller kosthold? Still spørsmålet ditt her!</p>
+  <div class="qa-form-box">
+    <h2>Still et spørsmål</h2>
+    <p>Vi publiserer svaret så snart vi kan.</p>
+    <input class="c-input" id="qaName" type="text" placeholder="Ditt navn" style="margin-bottom:.8rem" />
+    <textarea class="c-input c-ta" id="qaQuestion" placeholder="Skriv spørsmålet ditt her..."></textarea>
+    <button class="c-btn" onclick="submitQuestion()">Send spørsmål</button>
+    <div class="c-success" id="qaSuccess">✓ Spørsmålet er sendt! Vi svarer så snart vi kan.</div>
+  </div>
+  <div class="qa-list" id="qaList"></div>
+</div>
+
+<!-- Q&A DETAIL VIEW -->
+<div class="qa-detail-view" id="qaDetailView">
+  <button class="article-back" onclick="showQABack()">← Tilbake til spørsmål</button>
+  <div id="qaDetailContent"></div>
+</div>
+
+<!-- ARTICLE VIEW -->
+<div class="article-view" id="articleView">
+  <button class="article-back" onclick="showBlogList()">← Tilbake til blogg</button>
+  <div class="article-cat" id="articleCat"></div>
+  <h1 class="article-title" id="articleTitle"></h1>
+  <div class="article-meta">
+    <span id="articleDate"></span>
+    <span id="articleAuthor"></span>
+    <span id="articleReadtime"></span>
+  </div>
+  <div class="article-img" id="articleImg"></div>
+  <div class="article-body" id="articleBody"></div>
+
+  <!-- COMMENTS -->
+  <div class="comments-wrap">
+    <div class="comments-heading">KOMMENTARER</div>
+    <div class="comment-form-box">
+      <div class="comment-form-label">Legg igjen en kommentar</div>
+        <input class="c-input" id="commentName" type="text" placeholder="Ditt navn" style="margin-bottom:.8rem" />
+      <textarea class="c-input c-ta" id="commentText" placeholder="Skriv kommentaren din..."></textarea>
+      <button class="c-btn" onclick="submitComment()">Send kommentar</button>
+      <div class="c-success" id="commentSuccess">✓ Kommentaren er publisert!</div>
+    </div>
+    <div class="comments-list" id="commentsList"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Protein Snadder UB</div>
+  <div class="footer-links">
+    <a href="index.html">Forside</a>
+    <a href="index.html#produkter">Produkter</a>
+    <a href="team.html">Teamet</a>
+    <a href="kontakt.html">Kontakt</a>
+    <a href="personvern.html">Personvern</a>
+  </div>
+  <div class="footer-copy">© 2025 Protein Snadder UB – Ungdomsbedrift · Trondheim</div>
+</footer>
+
+<script>
+  let allPosts = [];
+  let currentCat = 'alle';
+  let currentPostId = null;
+
+  // ── POSTS ──
+  function loadPosts() {
+    const defaultPosts = [
+      {id:1,title:"5 treningsøvelser som gir deg mer protein-nytte",category:"Trening",author:"Martin T. L. Hesselberg",readtime:4,excerpt:"Visste du at hvilke øvelser du gjør påvirker hvor mye protein kroppen din faktisk tar opp? Her er fem øvelser som maksimerer effekten av proteininntaket ditt.",content:"<p>Protein er byggesteinene i musklene dine – men ikke all trening utnytter proteinet likt. Her er fem øvelser du bør ha i programmet ditt.</p><h2>1. Knebøy</h2><p>Kongen av alle styrkeøvelser. Den aktiverer nesten alle muskelgrupper i underkroppen og setter i gang en enorm hormonrespons.</p><h2>2. Markløft</h2><p>Den andre store flerledsøvelsen som bygger total kroppsstyrke. Etter en tung markløft-økt vil kroppen din absorbere protein som en svamp.</p><h2>3. Benkpress</h2><p>Klassikeren for overkroppsutvikling. Kombinert med et proteinrikt mellommåltid etter trening gir benkpress imponerende resultater.</p><h2>4. Pull-ups</h2><p>Blant de mest effektive øvelsene for rygg og biceps. Belønner deg med rask muskelvekst når proteininntaket er på plass.</p><h2>5. Skulderpress</h2><p>Bygger breie skuldre og en sterk overkropp. Kombiner det med en proteinbar etter trening for optimalt resultat.</p><p><strong>Tips:</strong> Spis et proteinrikt mellommåltid innen 30–60 minutter etter trening. En proteinbar fra Protein Snadder UB er perfekt!</p>",img:null,published:true,date:"2025-04-01T10:00:00.000Z"},
+      {id:2,title:"Slik bygger du et proteinrikt kosthold som faktisk funker",category:"Kosthold",author:"Martin T. L. Hesselberg",readtime:5,excerpt:"Et proteinrikt kosthold trenger ikke være komplisert eller dyrt. Vi guider deg gjennom de enkle grepene som gjør en stor forskjell.",content:"<p>Med litt kunnskap kan du spise variert, smakfullt og likevel få i deg nok protein.</p><h2>Hvor mye protein trenger du?</h2><p>En tommelfingerregel er <strong>1,6–2,2 gram per kilo kroppsvekt</strong> per dag. For en person på 70 kg er det 110–150 gram daglig.</p><h2>De beste proteinkildene</h2><ul><li><strong>Egg</strong> – ca. 6g protein per egg</li><li><strong>Kylling</strong> – ca. 30g per 100g</li><li><strong>Gresk yoghurt</strong> – ca. 10g per 100g</li><li><strong>Proteinbarer</strong> – 15–21g, perfekt som mellommåltid</li></ul><h2>Planlegg måltidene</h2><p>Ha alltid proteinkilder tilgjengelig. Start med egg eller yoghurt, ha en proteinbar i sekken, og sørg for protein til middag.</p><p>Med Protein Snadder UB kan du bestille proteinbarer rett hjem!</p>",img:null,published:true,date:"2025-04-05T12:00:00.000Z"},
+      {id:3,title:"Hvorfor er protein så viktig – og hva skjer i kroppen?",category:"Protein",author:"Martin T. L. Hesselberg",readtime:4,excerpt:"Alle sier du bør spise mer protein – men vet du faktisk hva protein gjør i kroppen din? Vi forklarer det enkelt.",content:"<p>Protein er ett av tre makronæringsstoffer. Det er bygd opp av aminosyrer – 20 ulike, og 9 er <strong>essensielle</strong> som kroppen ikke kan produsere selv.</p><h2>Hva bruker kroppen protein til?</h2><ul><li><strong>Bygge og reparere muskler</strong></li><li><strong>Hormoner og enzymer</strong></li><li><strong>Immunforsvaret</strong></li><li><strong>Metthetsfølelse</strong> – protein gir lengst metthet</li></ul><h2>Hva skjer ved for lite protein?</h2><p>Muskelsvinn, dårligere immunforsvar, tretthet og saktere restitusjon. En bar fra Protein Snadder gir deg 19–21g protein – omtrent som tre egg!</p>",img:null,published:true,date:"2025-04-10T09:00:00.000Z"},
+      {id:4,title:"Treningstrender 2025: Hva er hot og hva er hype?",category:"Trender",author:"Martin T. L. Hesselberg",readtime:3,excerpt:"Hvert år kommer nye trender som lover raske resultater. Her er hva som faktisk funker i 2025 – og hva du kan ignorere.",content:"<h2>Hva er hot</h2><h3>Sone 2-trening</h3><p>Lavintensitets utholdenhetstrening der du akkurat klarer å snakke. Forbedrer aerob kapasitet og fettforbrenning over tid.</p><h3>Hybrid-atleten</h3><p>Kombinasjonen av styrketrening og kondisjon. Begge deler – og god på begge.</p><h3>Proteinrikt mellommåltid</h3><p>Proteinbarer er ikke lenger bare for bodybuildere. De er mainstream – og med god grunn.</p><h2>Hva kan du ignorere</h2><h3>Detox-programmer</h3><p>Kroppen detoxer selv via lever og nyrer. Juice-kurer har ingen dokumentert effekt.</p><p><strong>Vår anbefaling:</strong> Tren regelmessig, spis nok protein, sov godt.</p>",img:null,published:true,date:"2025-04-15T11:00:00.000Z"},
+      {id:5,title:"Ønsker du å samarbeide med Protein Snadder UB?",category:"Samarbeid",author:"Martin T. L. Hesselberg",readtime:3,excerpt:"Vi er alltid på utkikk etter samarbeidspartnere – treningssentre, influencere eller lokale bedrifter i Trondheim.",content:"<p>Vi tror på styrken i gode samarbeid og er åpne for å snakke med folk som deler vår lidenskap.</p><h2>Hvem ser vi etter?</h2><h3>Treningssentre og idrettslag</h3><p>Vi ønsker å levere proteinsnacks direkte til treningssentre i Trondheim. Ta kontakt for partnerskapsavtaler.</p><h3>Content creators</h3><p>Aktiv på sosiale medier? Vi tilbyr produkter i bytte mot ærlig omtale.</p><h3>Lokale bedrifter</h3><p>Åpne for kreative samarbeidsformer – fra kampanjer til distribusjon.</p><p><strong>Ta kontakt:</strong> proteinsnadder@gmail.com eller @proteinsnadder på Instagram.</p>",img:null,published:true,date:"2025-04-20T10:00:00.000Z"}
+    ];
+    allPosts = JSON.parse(localStorage.getItem('ps_blog') || 'null') || defaultPosts;
+    renderGrid();
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('blogGrid');
+    const published = allPosts.filter(p => p.published && (currentCat === 'alle' || p.category === currentCat))
+      .sort((a,b) => new Date(b.date)-new Date(a.date));
+    if (!published.length) {
+      grid.innerHTML = '<div class="blog-empty">Ingen innlegg publisert enda. Kom tilbake snart!</div>';
+      return;
+    }
+    grid.innerHTML = published.map(p => `
+      <a class="blog-card" onclick="openArticle(${p.id});return false;" href="#">
+        <div class="blog-card-img">
+          ${p.img ? `<img src="${p.img}" alt="${p.title}">` : `<div class="blog-card-img-placeholder">${p.category||'PS'}</div>`}
+        </div>
+        <div class="blog-card-body">
+          <div class="blog-card-meta">
+            <span class="blog-card-cat">${p.category}</span>
+            <span class="blog-card-date">${fmt(p.date)}</span>
+          </div>
+          <div class="blog-card-title">${p.title}</div>
+          <div class="blog-card-excerpt">${p.excerpt}</div>
+          <div class="blog-card-footer">
+            <span class="blog-card-author">Av ${p.author}</span>
+            <span class="blog-card-read">${p.readtime} min lesing →</span>
+          </div>
+        </div>
+      </a>`).join('');
+  }
+
+  function filterCat(cat, btn) {
+    currentCat = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid();
+  }
+
+  function openArticle(id) {
+    const p = allPosts.find(x => x.id === id);
+    if (!p) return;
+    currentPostId = id;
+    document.getElementById('articleCat').textContent      = p.category;
+    document.getElementById('articleTitle').textContent    = p.title;
+    document.getElementById('articleDate').textContent     = fmt(p.date);
+    document.getElementById('articleAuthor').textContent   = 'Av ' + p.author;
+    document.getElementById('articleReadtime').textContent = p.readtime + ' min lesing';
+    document.getElementById('articleImg').innerHTML = p.img
+      ? `<img src="${p.img}" alt="${p.title}">`
+      : `<div class="article-img-placeholder">${p.category}</div>`;
+    document.getElementById('articleBody').innerHTML = p.content;
+    renderComments(id);
+    show('articleView'); hide('blogListView'); hide('qaView'); hide('qaDetailView');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function showBlogList() {
+    show('blogListView'); hide('articleView'); hide('qaView'); hide('qaDetailView');
+    document.querySelectorAll('.cat-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+    currentCat = 'alle';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // ── COMMENTS ──
+  function getComments(pid) { return JSON.parse(localStorage.getItem('ps_comments_'+pid)||'[]'); }
+
+  function renderComments(pid) {
+    const approved = getComments(pid).filter(c => c.approved)
+      .sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0) || new Date(a.date)-new Date(b.date));
+    const el = document.getElementById('commentsList');
+    if (!approved.length) { el.innerHTML = '<div class="c-empty">Ingen kommentarer enda – vær den første!</div>'; return; }
+    el.innerHTML = approved.map(c => `
+      <div class="comment-item${c.pinned?' pinned':''}">
+        ${c.pinned?'<span class="c-pin-badge">📌 Festet kommentar</span>':''}
+        <div class="c-header">
+          <div class="c-avatar">${c.name.charAt(0).toUpperCase()}</div>
+          <div class="c-name">${c.name}</div>
+          <div class="c-date">${fmt(c.date)}</div>
+        </div>
+        <div class="c-text">${c.text}</div>
+      </div>`).join('');
+  }
+
+  function submitComment() {
+    const name = document.getElementById('commentName').value.trim();
+    const text = document.getElementById('commentText').value.trim();
+    if (!name || !text) { alert('Navn og kommentar er påkrevd.'); return; }
+    const cs = getComments(currentPostId);
+    cs.push({ id:Date.now(), name, text, approved:true, pinned:false, date:new Date().toISOString() });
+    localStorage.setItem('ps_comments_'+currentPostId, JSON.stringify(cs));
+    document.getElementById('commentSuccess').style.display = 'block';
+    ['commentName','commentText'].forEach(id => document.getElementById(id).value='');
+    renderComments(currentPostId);
+    setTimeout(() => document.getElementById('commentSuccess').style.display='none', 4000);
+  }
+
+  // ── Q&A ──
+  function getQA() { return JSON.parse(localStorage.getItem('ps_qa')||'[]'); }
+  function saveQA(qas) { localStorage.setItem('ps_qa', JSON.stringify(qas)); }
+
+  function showQAView(btn) {
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderQAList();
+    show('qaView'); hide('blogListView'); hide('articleView'); hide('qaDetailView');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  let currentThreadId = null;
+
+  function renderQAList() {
+    const threads = getQA()
+      .filter(q => !q.hidden)
+      .sort((a,b) => (b.pinned?1:0)-(a.pinned?1:0) || new Date(b.date)-new Date(a.date));
+    const el = document.getElementById('qaList');
+    if (!threads.length) { el.innerHTML = '<div class="qa-empty">Ingen spørsmål enda – vær den første!</div>'; return; }
+    el.innerHTML = threads.map(q => {
+      const replies = (q.replies||[]).filter(r=>!r.hidden);
+      return `
+        <div class="qa-thread${q.pinned?' pinned':''}" onclick="openThread(${q.id})">
+          <div class="qa-thread-q">
+            <div class="qa-thread-header">
+              <div class="qa-thread-avatar">${q.name.charAt(0).toUpperCase()}</div>
+              <div class="qa-thread-name">${q.name}</div>
+              ${q.pinned?'<span class="qa-pin-badge">📌 Festet</span>':''}
+              <div class="qa-thread-date">${fmt(q.date)}</div>
+            </div>
+            <div class="qa-thread-qtxt">${q.question}</div>
+            <div class="qa-thread-footer">
+              <span class="qa-thread-replies-badge">${replies.length > 0 ? '💬 '+replies.length+' svar' : 'Ingen svar enda'}</span>
+              <span class="qa-thread-open-hint">Trykk for å lese og svare →</span>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function openThread(threadId) {
+    const qas = getQA();
+    const q = qas.find(x => x.id === threadId);
+    if (!q) return;
+    currentThreadId = threadId;
+    const replies = (q.replies||[]).filter(r=>!r.hidden);
+    document.getElementById('qaDetailContent').innerHTML = `
+      <div class="qa-detail-question">
+        <div class="qa-detail-header">
+          <div class="qa-detail-avatar">${q.name.charAt(0).toUpperCase()}</div>
+          <div>
+            <div class="qa-detail-name">${q.name}</div>
+            <div class="qa-detail-date">${fmt(q.date)}</div>
+          </div>
+          ${q.pinned?'<span class="qa-pin-badge" style="margin-left:auto">📌 Festet</span>':''}
+        </div>
+        <div class="qa-detail-qtxt">${q.question}</div>
+      </div>
+      <div class="qa-replies-heading">${replies.length} SVAR</div>
+      <div class="qa-replies-list" id="threadReplies"></div>
+      <div class="qa-reply-form-box">
+        <div class="qa-reply-form-label">Skriv et svar</div>
+        <input class="qa-reply-name-input" id="detailReplyName" type="text" placeholder="Ditt navn" />
+        <textarea class="qa-reply-input" id="detailReplyText" placeholder="Skriv svaret ditt her..."></textarea>
+        <button class="qa-reply-btn" onclick="submitReply()">Post svar</button>
+        <div id="replySuccess" style="display:none;color:var(--lime);font-size:.82rem;margin-top:.6rem;font-weight:600">✓ Svaret er postet!</div>
+      </div>`;
+
+    hide('qaView'); hide('blogListView'); hide('articleView');
+    show('qaDetailView');
+    renderThreadReplies(q);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function showQABack() {
+    currentThreadId = null;
+    hide('qaDetailView');
+    show('qaView');
+    renderQAList();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  // Recursive reply renderer
+  function renderReplyNode(r, allReplies, depth) {
+    const children = allReplies.filter(x => x.parentId === r.id && !x.hidden);
+    const indent = Math.min(depth * 16, 48);
+    const childrenHTML = children.length
+      ? `<div class="qa-children">${children.map(c => renderReplyNode(c, allReplies, depth+1)).join('')}</div>`
+      : '';
+    return `
+      <div class="qa-reply-item${r.isAdmin?' admin-reply':''}" id="reply-${r.id}" style="margin-left:${indent}px">
+        <div class="qa-reply-header">
+          <div class="qa-reply-avatar">${r.name.charAt(0).toUpperCase()}</div>
+          <div class="qa-reply-name">${r.name}${r.isAdmin?'<span style="font-size:.6rem;background:var(--lime);color:var(--black);border-radius:3px;padding:.1rem .4rem;font-weight:800;letter-spacing:1px;margin-left:.3rem">PS</span>':''}</div>
+          <div class="qa-reply-date">${fmt(r.date)}</div>
+        </div>
+        <div class="qa-reply-txt">${r.text}</div>
+        <div class="qa-reply-actions">
+          <button class="qa-reply-btn-small" onclick="toggleNestedForm('${r.id}')">↩ Svar</button>
+        </div>
+        <div class="qa-nested-form" id="nested-${r.id}">
+          <input class="qa-nested-name" id="nname-${r.id}" type="text" placeholder="Ditt navn" />
+          <textarea class="qa-nested-text" id="ntext-${r.id}" placeholder="Skriv svar til ${r.name}..."></textarea>
+          <div class="qa-nested-actions">
+            <button class="qa-nested-submit" onclick="submitNestedReply('${r.id}')">Svar</button>
+            <button class="qa-nested-cancel" onclick="toggleNestedForm('${r.id}')">Avbryt</button>
+          </div>
+        </div>
+        ${childrenHTML}
+      </div>`;
+  }
+
+  function renderThreadReplies(thread) {
+    const all = (thread.replies||[]).filter(r=>!r.hidden);
+    const roots = all.filter(r => !r.parentId || r.parentId === 'null' || r.parentId === 0);
+    const count = all.length;
+    document.getElementById('threadReplies').innerHTML = roots.length
+      ? roots.map(r => renderReplyNode(r, all, 0)).join('')
+      : '<div style="opacity:.35;font-size:.85rem;text-align:center;padding:1.5rem 0">Ingen svar enda – vær den første!</div>';
+    const heading = document.querySelector('#qaDetailContent .qa-replies-heading');
+    if (heading) heading.textContent = count + ' SVAR';
+  }
+
+  function toggleNestedForm(replyId) {
+    const form = document.getElementById('nested-'+replyId);
+    form.classList.toggle('open');
+    if (form.classList.contains('open')) document.getElementById('nname-'+replyId).focus();
+  }
+
+  function submitNestedReply(parentId) {
+    const name = document.getElementById('nname-'+parentId).value.trim();
+    const text = document.getElementById('ntext-'+parentId).value.trim();
+    if (!name || !text) { alert('Fyll inn navn og svar.'); return; }
+    const qas = getQA();
+    const thread = qas.find(q => q.id === currentThreadId);
+    if (!thread) return;
+    if (!thread.replies) thread.replies = [];
+    thread.replies.push({ id:Date.now(), parentId:Number(parentId)||parentId, name, text, isAdmin:false, hidden:false, date:new Date().toISOString() });
+    saveQA(qas);
+    renderThreadReplies(thread);
+  }
+
+  function submitReply() {
+    const name = document.getElementById('detailReplyName').value.trim();
+    const text = document.getElementById('detailReplyText').value.trim();
+    if (!name || !text) { alert('Fyll inn navn og svar.'); return; }
+    const qas = getQA();
+    const thread = qas.find(q => q.id === currentThreadId);
+    if (!thread) return;
+    if (!thread.replies) thread.replies = [];
+    thread.replies.push({ id:Date.now(), parentId:null, name, text, isAdmin:false, hidden:false, date:new Date().toISOString() });
+    saveQA(qas);
+    document.getElementById('detailReplyName').value = '';
+    document.getElementById('detailReplyText').value = '';
+    document.getElementById('replySuccess').style.display = 'block';
+    setTimeout(() => document.getElementById('replySuccess').style.display='none', 3000);
+    renderThreadReplies(thread);
+  }
+
+  function submitQuestion() {
+    const name = document.getElementById('qaName').value.trim();
+    const q    = document.getElementById('qaQuestion').value.trim();
+    if (!name || !q) { alert('Navn og spørsmål er påkrevd.'); return; }
+    const qas = getQA();
+    qas.push({ id:Date.now(), name, question:q, replies:[], pinned:false, hidden:false, date:new Date().toISOString() });
+    saveQA(qas);
+    document.getElementById('qaSuccess').style.display = 'block';
+    ['qaName','qaQuestion'].forEach(id => document.getElementById(id).value='');
+    setTimeout(() => document.getElementById('qaSuccess').style.display='none', 3000);
+    renderQAList();
+  }
+
+  // ── UTILS ──
+  function show(id) { document.getElementById(id).style.display = 'block'; }
+  function hide(id) { document.getElementById(id).style.display = 'none'; }
+  function fmt(d) {
+    if (!d) return '';
+    return new Date(d).toLocaleDateString('no-NO',{day:'numeric',month:'long',year:'numeric'});
+  }
+
+  loadPosts();
+</script>
+
+<script src="cart.js"></script>
+</body>
+</html>
