@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ta Kontakt – Protein Snadder UB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root { --black:#080909; --white:#f2ede4; --lime:#c5f135; --lime-dim:rgba(197,241,53,0.12); --card:#111310; --border:rgba(255,255,255,0.07); }
+    html { scroll-behavior:smooth; }
+    body { font-family:'DM Sans',sans-serif; background:var(--black); color:var(--white); overflow-x:hidden; min-height:100vh; }
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-track { background:var(--black); }
+    ::-webkit-scrollbar-thumb { background:var(--lime); border-radius:3px; }
+
+    /* NAV */
+    nav { position:fixed; top:0; left:0; width:100%; z-index:200; display:flex; align-items:center; justify-content:space-between; padding:1.1rem 2.5rem; background:rgba(8,9,9,0.9); backdrop-filter:blur(14px); border-bottom:1px solid var(--border); }
+    .nav-logo { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; letter-spacing:2px; color:var(--lime); text-decoration:none; white-space:nowrap; }
+    .nav-right { display:flex; align-items:center; gap:0.75rem; }
+    .nav-link-btn { background:none; border:1px solid var(--border); color:var(--white); font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:500; padding:0.5rem 1rem; border-radius:6px; cursor:pointer; text-decoration:none; transition:border-color .2s,color .2s; white-space:nowrap; }
+    .nav-link-btn:hover { border-color:rgba(197,241,53,0.4); color:var(--lime); }
+    .nav-link-btn.active { border-color:rgba(197,241,53,0.4); color:var(--lime); background:var(--lime-dim); }
+
+    /* PAGE HERO */
+    .page-hero { padding:9rem 2.5rem 4rem; max-width:1140px; margin:0 auto; }
+    .section-label { font-size:.72rem; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:var(--lime); margin-bottom:.8rem; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(3.5rem,9vw,6.5rem); line-height:.9; letter-spacing:4px; animation:fadeUp .7s ease both; }
+    .page-title span { color:var(--lime); }
+    .page-sub { max-width:500px; margin:1.5rem 0 0; font-size:1rem; line-height:1.75; opacity:0.6; animation:fadeUp .7s .1s ease both; }
+
+    /* RESPONSE BANNER */
+    .response-banner {
+      max-width:1140px; margin:0 auto 0; padding:0 2.5rem;
+      display:flex; gap:1rem; flex-wrap:wrap; margin-top:2.5rem;
+    }
+    .response-pill {
+      display:flex; align-items:center; gap:.7rem;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:999px; padding:.6rem 1.2rem;
+      font-size:.8rem; font-weight:600;
+    }
+    .response-pill-dot { width:7px; height:7px; border-radius:50%; background:var(--lime); flex-shrink:0; animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* DIVIDER */
+    .divider { border:none; border-top:1px solid var(--border); max-width:1140px; margin:3rem auto 0; }
+
+    /* MAIN CONTACT LAYOUT */
+    .contact-section { max-width:1140px; margin:0 auto; padding:4rem 2.5rem 5rem; display:grid; grid-template-columns:1fr 1.5fr; gap:5rem; align-items:start; }
+
+    /* LEFT */
+    .contact-cards { display:flex; flex-direction:column; gap:1rem; margin-bottom:2.5rem; }
+    .contact-card { display:flex; align-items:flex-start; gap:1rem; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:1.2rem 1.4rem; transition:border-color .2s; }
+    .contact-card:hover { border-color:rgba(197,241,53,.2); }
+    .contact-icon { width:42px; height:42px; border-radius:8px; background:var(--lime-dim); border:1px solid rgba(197,241,53,.15); display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1.1rem; }
+    .contact-card-label { font-size:.67rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; opacity:.4; margin-bottom:.3rem; }
+    .contact-card-value { font-size:.95rem; font-weight:600; }
+    .contact-card-value a { color:var(--white); text-decoration:none; transition:color .2s; }
+    .contact-card-value a:hover { color:var(--lime); }
+    .contact-card-note { font-size:.75rem; opacity:.38; margin-top:.25rem; }
+
+    /* MINI FAQ on contact page */
+    .contact-faq-title { font-size:.68rem; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--lime); opacity:.8; margin-bottom:1rem; }
+    .contact-faq { display:flex; flex-direction:column; gap:.5rem; }
+    .contact-faq-item { background:var(--card); border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .contact-faq-q { display:flex; align-items:center; justify-content:space-between; padding:1rem 1.2rem; cursor:pointer; font-weight:600; font-size:.85rem; gap:1rem; user-select:none; }
+    .contact-faq-q:hover { color:var(--lime); }
+    .contact-faq-arrow { font-size:.75rem; opacity:.4; transition:transform .25s; flex-shrink:0; }
+    .contact-faq-item.open .contact-faq-arrow { transform:rotate(180deg); opacity:1; color:var(--lime); }
+    .contact-faq-a { max-height:0; overflow:hidden; transition:max-height .3s,padding .3s; font-size:.83rem; opacity:.55; line-height:1.7; padding:0 1.2rem; }
+    .contact-faq-item.open .contact-faq-a { max-height:120px; padding:.1rem 1.2rem 1rem; }
+
+    /* RIGHT – FORM */
+    .contact-form-wrap { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:2.5rem 2rem; }
+    .contact-form-wrap h3 { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; letter-spacing:1px; margin-bottom:.3rem; }
+    .contact-form-wrap > p { opacity:.45; font-size:.85rem; margin-bottom:2rem; line-height:1.6; }
+    .contact-form { display:flex; flex-direction:column; gap:1rem; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .form-group { display:flex; flex-direction:column; gap:.4rem; }
+    .form-group label { font-size:.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; opacity:.42; }
+    .form-group input, .form-group textarea, .form-group select { background:#0e110d; border:1px solid var(--border); border-radius:7px; color:var(--white); font-family:'DM Sans',sans-serif; font-size:.9rem; padding:.85rem 1rem; outline:none; width:100%; transition:border-color .2s,box-shadow .2s; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color:rgba(197,241,53,.35); box-shadow:0 0 0 3px rgba(197,241,53,.07); }
+    .form-group textarea { resize:vertical; min-height:120px; }
+    .form-group select option { background:#111; }
+    .form-submit { background:var(--lime); color:var(--black); font-family:'DM Sans',sans-serif; font-weight:800; font-size:.9rem; letter-spacing:1px; padding:1rem 2rem; border-radius:6px; border:none; cursor:pointer; transition:transform .15s,box-shadow .15s; margin-top:.3rem; }
+    .form-submit:hover { transform:translateY(-2px); box-shadow:0 8px 28px rgba(197,241,53,.25); }
+    .form-success { display:none; background:var(--lime-dim); border:1px solid rgba(197,241,53,.25); border-radius:8px; padding:1rem 1.2rem; font-size:.9rem; color:var(--lime); margin-top:.5rem; }
+
+    /* FOOTER */
+    footer { border-top:1px solid var(--border); padding:2.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+    .footer-logo { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; letter-spacing:2px; color:var(--lime); }
+    .footer-copy { font-size:.78rem; opacity:.32; }
+    .footer-links { display:flex; gap:1.5rem; }
+    .footer-links a { font-size:.78rem; opacity:.38; color:var(--white); text-decoration:none; transition:opacity .2s; }
+    .footer-links a:hover { opacity:1; }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    @media(max-width:900px) { .contact-section{grid-template-columns:1fr;gap:3rem;} }
+    @media(max-width:640px) { nav{padding:1rem 1.2rem;} .nav-link-btn{font-size:.72rem;padding:.38rem .55rem;} .form-row{grid-template-columns:1fr;} footer{flex-direction:column;align-items:flex-start;} .page-hero{padding:8rem 1.5rem 3rem;} }
+  </style>
+
+  <!-- Google Analytics – bytt ut G-XXXXXXXXXX med din egen Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">Protein Snadder UB</a>
+  <div class="nav-right">
+    <a href="kontakt.html" class="nav-link-btn active">Ta Kontakt</a>
+    <a href="team.html" class="nav-link-btn">Møt Teamet</a>
+    <button onclick="psOpenCart()" class="nav-link-btn" style="background:var(--lime-dim);border-color:rgba(197,241,53,.2);color:var(--lime);font-weight:700;cursor:pointer">Handlekurv <span class="ps-cart-count" style="background:var(--lime);color:var(--black);border-radius:999px;font-size:.65rem;font-weight:800;padding:.1rem .45rem;margin-left:.2rem;display:none;align-items:center;justify-content:center">0</span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <p class="section-label">Vi er her for deg</p>
+  <h1 class="page-title">TA<br><span>KONTAKT</span></h1>
+  <p class="page-sub">Spørsmål om produkter, bestilling eller levering? Vi svarer deg så raskt vi kan.</p>
+</div>
+
+<!-- RESPONSE BANNER -->
+<div class="response-banner">
+  <div class="response-pill"><span class="response-pill-dot"></span> Svarer innen 1–2 virkedager</div>
+  <div class="response-pill"><span class="response-pill-dot"></span> Raskest via Instagram DM</div>
+  <div class="response-pill"><span class="response-pill-dot"></span> Levering i Trondheim</div>
+</div>
+
+<hr class="divider" />
+
+<!-- CONTACT CONTENT -->
+<div class="contact-section">
+  <div>
+    <div class="contact-cards">
+      <div class="contact-card">
+        <div class="contact-icon">✉</div>
+        <div>
+          <div class="contact-card-label">E-post</div>
+          <div class="contact-card-value"><a href="/cdn-cgi/l/email-protection#c5ada0ac85b5b7aab1a0acabb6aba4a1a1a0b7ebabaa"><span class="__cf_email__" data-cfemail="7a121f133a0a08150e1f131409141b1e1e1f08541415">[email&#160;protected]</span></a></div>
+          <div class="contact-card-note">Svar innen 1–2 virkedager</div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">📱</div>
+        <div>
+          <div class="contact-card-label">Telefon</div>
+          <div class="contact-card-value"><a href="tel:+4746529018">+47 465 29 018</a></div>
+          <div style="font-size:.72rem;opacity:.4;margin-top:.4rem;line-height:1.5">Husk å oppgi at du tar kontakt<br>i forbindelse med Protein Snadder UB</div>
+          <div class="contact-card-note">Tilgjengelig på hverdager</div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">📸</div>
+        <div>
+          <div class="contact-card-label">Instagram</div>
+          <div class="contact-card-value"><a href="https://instagram.com/proteinsnadder" target="_blank">@proteinsnadder</a></div>
+          <div class="contact-card-note">Raskeste måten å nå oss</div>
+        </div>
+      </div>
+      <div class="contact-card">
+        <div class="contact-icon">📍</div>
+        <div>
+          <div class="contact-card-label">Område</div>
+          <div class="contact-card-value">Trondheim, Norge</div>
+          <div class="contact-card-note">Leverer i Trondheimområdet</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="contact-faq-title">Ofte stilte spørsmål</div>
+    <div class="contact-faq">
+      <div class="contact-faq-item" onclick="toggleFaq(this)">
+        <div class="contact-faq-q">Hvor lang tid tar leveringen? <span class="contact-faq-arrow">▼</span></div>
+        <div class="contact-faq-a">Vi leverer normalt innen 1–3 virkedager etter bekreftet betaling.</div>
+      </div>
+      <div class="contact-faq-item" onclick="toggleFaq(this)">
+        <div class="contact-faq-q">Kan jeg endre bestillingen min? <span class="contact-faq-arrow">▼</span></div>
+        <div class="contact-faq-a">Ja, ta kontakt innen 1 virkedag etter bestilling så ordner vi det.</div>
+      </div>
+      <div class="contact-faq-item" onclick="toggleFaq(this)">
+        <div class="contact-faq-q">Leverer dere utenfor Trondheim? <span class="contact-faq-arrow">▼</span></div>
+        <div class="contact-faq-a">Per nå leverer vi primært i Trondheim. Ta kontakt så ser vi hva vi kan få til.</div>
+      </div>
+      <div class="contact-faq-item" onclick="toggleFaq(this)">
+        <div class="contact-faq-q">Er frakten gratis? <span class="contact-faq-arrow">▼</span></div>
+        <div class="contact-faq-a">Ja, frakt er gratis på alle bestillinger i oppstartsfasen.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-form-wrap">
+      <div id="formSuccess" style="display:none;text-align:center;padding:2rem 0">
+        <div style="font-size:2.5rem;margin-bottom:1rem">✅</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:1px;color:var(--lime);margin-bottom:.5rem">Melding sendt!</div>
+        <div style="opacity:.5;font-size:.9rem">Vi tar kontakt innen 1–2 virkedager.</div>
+      </div>
+    <h3>Send oss en melding</h3>
+    <p>Fyll ut skjemaet så tar vi kontakt innen 1–2 virkedager.</p>
+    <form class="contact-form" onsubmit="submitContact(event)">
+      <div class="form-row">
+        <div class="form-group"><label>Navn</label><input id="cName" type="text" placeholder="Ola Nordmann" required /></div>
+        <div class="form-group"><label>E-post</label><input id="cEmail" type="email" placeholder="ola@epost.no" required /></div>
+      </div>
+      <div class="form-group">
+        <label>Telefon (valgfritt)</label>
+        <input id="cPhone" type="tel" placeholder="+47 000 00 000" />
+      </div>
+      <div class="form-group">
+        <label>Emne</label>
+        <select id="cSubject">
+          <option>Spørsmål om bestilling</option>
+          <option>Spørsmål om levering</option>
+          <option>Produktspørsmål</option>
+          <option>Samarbeid</option>
+          <option>Jobb / bli med på laget</option>
+          <option>Annet</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Melding</label><textarea id="cMsg" placeholder="Skriv meldingen din her..." required></textarea></div>
+      <button type="submit" class="form-submit">Send melding</button>
+      <div class="form-success" id="contactSuccess">Meldingen er sendt! Vi svarer innen 1–2 virkedager.</div>
+    </form>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">Protein Snadder UB</div>
+  <div class="footer-links">
+    <a href="index.html">Forside</a>
+    <a href="index.html#produkter">Produkter</a>
+    <a href="team.html">Teamet</a>
+    <a href="personvern.html">Personvern</a>
+  </div>
+  <div class="footer-copy">© 2025 Protein Snadder UB – Ungdomsbedrift · Trondheim</div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  function toggleFaq(el) {
+    const isOpen = el.classList.contains('open');
+    document.querySelectorAll('.contact-faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) el.classList.add('open');
+  }
+  function initContactContent() {
+    const data = localStorage.getItem('ps_content');
+    if (!data) return;
+    const c = JSON.parse(data);
+    if (!c.contact) return;
+    const ct = c.contact;
+    const cards = document.querySelectorAll('.contact-card');
+    cards.forEach(card => {
+      const label = card.querySelector('.contact-card-label');
+      const val   = card.querySelector('.contact-card-value');
+      const note  = card.querySelector('.contact-card-note');
+      if (!label || !val) return;
+      const lbl = label.textContent.trim().toLowerCase();
+      if (lbl === 'e-post' && ct.email) {
+        val.innerHTML = `<a href="mailto:${ct.email}">${ct.email}</a>`;
+      } else if (lbl === 'telefon' && ct.phone) {
+        val.innerHTML = `<a href="tel:${ct.phone.replace(/\s/g,'')}">${ct.phone}</a>`;
+      } else if (lbl === 'instagram' && ct.instagram) {
+        val.innerHTML = `<a href="https://instagram.com/${ct.instagram}" target="_blank">@${ct.instagram}</a>`;
+      } else if (lbl === 'område' && ct.city) {
+        val.textContent = ct.city;
+        if (note) note.textContent = 'Leverer i ' + ct.city.split(',')[0] + 'området';
+      }
+    });
+
+    // FAQ on contact page
+    if (c.faq && c.faq.length) {
+      const faqEl = document.querySelector('.contact-faq');
+      if (faqEl) faqEl.innerHTML = c.faq.slice(0,4).map(f => `
+        <div class="contact-faq-item" onclick="toggleFaq(this)">
+          <div class="contact-faq-q">${f.q} <span class="contact-faq-arrow">▼</span></div>
+          <div class="contact-faq-a">${f.a}</div>
+        </div>`).join('');
+    }
+  }
+  initContactContent();
+
+  function submitContact(e) {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('.form-submit');
+    const data = new FormData(form);
+    btn.textContent = 'Sender...';
+    btn.disabled = true;
+    fetch('https://formspree.io/f/mgopokww', {
+      method: 'POST',
+      body: data,
+      headers: { 'Accept': 'application/json' }
+    }).then(r => {
+      if (r.ok) {
+        form.style.display = 'none';
+        document.getElementById('formSuccess').style.display = 'block';
+      } else {
+        btn.textContent = 'Send melding';
+        btn.disabled = false;
+        alert('Noe gikk galt. Prøv igjen eller kontakt oss direkte.');
+      }
+    }).catch(() => {
+      btn.textContent = 'Send melding';
+      btn.disabled = false;
+      alert('Noe gikk galt. Sjekk internettforbindelsen din.');
+    });
+  }
+</script>
+
+<script src="cart.js"></script>
+</body>
+</html>
